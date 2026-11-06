@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#176b37">
+<title>VUV किसान सेवा</title>
+<style>
+:root{--g:#176b37;--d:#104d29;--bg:#f3f8f3;--ink:#173522;--muted:#637568}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans Devanagari",Arial,sans-serif}
+header{background:linear-gradient(135deg,#176b37,#0e512a);color:#fff;padding:20px 14px;text-align:center}
+.logo{font-size:40px}header h1{margin:4px;font-size:24px}header p{margin:5px}
+nav{display:flex;gap:7px;overflow:auto;padding:10px;background:#fff;position:sticky;top:0;z-index:5}
+nav a{white-space:nowrap;color:var(--g);text-decoration:none;font-size:13px;font-weight:700;padding:8px 10px;border:1px solid #d5e8d9;border-radius:20px}
+main{max-width:760px;margin:auto;padding:12px}.card{background:#fff;border-radius:16px;padding:15px;margin:12px 0;box-shadow:0 3px 14px #183b2010;border:1px solid #e3eee5}
+h2{font-size:18px;margin:0 0 10px;color:var(--d)}h3{font-size:16px;margin:12px 0 8px}p{line-height:1.5;margin:7px 0}.muted{color:var(--muted);font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.tile{background:#edf7ef;padding:11px;border-radius:12px}
+.stat{font-size:23px;font-weight:800;color:var(--g)}button,.btn{display:inline-block;border:0;border-radius:10px;padding:10px 12px;background:var(--g);color:white;font-weight:700;text-decoration:none;font-size:13px;cursor:pointer;text-align:center}
+.secondary{background:#e8f3ea!important;color:var(--d)!important;border:1px solid #cfe3d3!important}
+input,select{width:100%;padding:10px;border:1px solid #cbdccd;border-radius:9px;margin:5px 0 10px;font:inherit}
+label{font-size:13px;font-weight:700}.links a{display:block;padding:10px 2px;color:var(--g);text-decoration:none;border-bottom:1px solid #e8efe9}
+.option{display:block;width:100%;text-align:left;margin:7px 0;background:#f0f7f1;color:#173522;border:1px solid #d7e8da}
+.notice{background:#fff8e4;border-left:4px solid #e6b52e;padding:10px;border-radius:8px;font-size:13px}
+footer{text-align:center;color:#647569;font-size:12px;padding:18px}
+@media(max-width:440px){header h1{font-size:22px}.grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header><div class="logo">🌾</div><h1>VUV किसान सेवा</h1><p>किसानों की जानकारी, खेती की सलाह और उपयोगी सेवाएँ</p></header>
+<nav>
+<a href="#mausam">मौसम</a><a href="#mandi">मंडी भाव</a><a href="#suchna">सरकारी सूचना</a><a href="#quiz">कृषि क्विज़</a><a href="#fasal">फसल सलाह</a><a href="#profile">प्रोफाइल</a><a href="#contact">संपर्क</a>
+</nav>
+<main>
+<section class="card" id="mausam">
+<h2>🌦️ बसखारी का लाइव मौसम</h2><p><b>स्थान:</b> बसखारी, अंबेडकर नगर, उत्तर प्रदेश (आसपास के निर्देशांक)</p>
+<div class="tile"><p id="weatherStatus" aria-live="polite">मौसम डेटा लोड हो रहा है…</p>
+<div class="grid">
+<div><div class="muted">अभी तापमान</div><div class="stat" id="wTemp">—</div></div>
+<div><div class="muted">महसूस हो रहा</div><div class="stat" id="wFeels">—</div></div>
+<div><div class="muted">आर्द्रता</div><div class="stat" id="wHumidity">—</div></div>
+<div><div class="muted">हवा की गति</div><div class="stat" id="wWind">—</div></div>
+</div>
+<p><b id="wCondition">मौसम की स्थिति प्राप्त की जा रही है…</b></p>
+<p>आज बारिश की संभावना: <b id="wRain">—</b></p><p class="muted" id="wUpdated">—</p>
+<button onclick="loadWeather()">मौसम फिर अपडेट करें</button></div>
+<h3>अगले 3 दिन का पूर्वानुमान</h3><div id="weatherForecast" class="grid"><div class="tile">लोड हो रहा है…</div></div>
+<p class="muted">डेटा Open-Meteo की मुफ्त सार्वजनिक मौसम सेवा से इंटरनेट द्वारा आता है। यह आसपास के क्षेत्र का मॉडल पूर्वानुमान है; आधिकारिक चेतावनी के लिए IMD देखें।</p>
+<div class="grid"><a class="btn secondary" href="https://mausam.imd.gov.in/" target="_blank">IMD मौसम</a><a class="btn secondary" href="https://mausamgram.imd.gov.in/" target="_blank">मौसमग्राम</a><a class="btn secondary" href="https://mausam.imd.gov.in/responsive/districtWiseNowcastGIS.php" target="_blank">जिला चेतावनी</a><a class="btn secondary" href="https://mausam.imd.gov.in/imd_latest/contents/agromet/advisory.php" target="_blank">कृषि मौसम सलाह</a></div>
+</section>
+
+<section class="card" id="mandi">
+<h2>📊 ताज़ा मंडी भाव</h2>
+<p>सरकारी AGMARKNET पर मंडी द्वारा दर्ज दैनिक न्यूनतम, अधिकतम और मॉडल भाव देखें।</p>
+<div class="tile">
+<label for="commodity">फसल / जिंस चुनें</label>
+<select id="commodity"><option>गेहूँ</option><option>धान</option><option>आलू</option><option>सरसों</option><option>चना</option><option>मटर</option><option>प्याज</option><option>टमाटर</option><option>गन्ना</option></select>
+<label for="mandiDistrict">जिला</label>
+<select id="mandiDistrict"><option>अंबेडकर नगर</option><option>अयोध्या</option><option>आजमगढ़</option><option>सुल्तानपुर</option><option>लखनऊ</option><option>सभी जिले</option></select>
+<button onclick="openMandi()">चुनी हुई फसल का मंडी भाव देखें</button>
+</div>
+<div class="notice">भाव रोज़ मंडियों से अपडेट होते हैं। ऐप में कोई अनुमानित या मनगढ़ंत कीमत नहीं दिखाई जाती। आधिकारिक रिपोर्ट खुलने पर तारीख, मंडी और फसल देखकर न्यूनतम / अधिकतम / मॉडल भाव जाँचें।</div>
+<div class="links">
+<a href="https://agmarknet.gov.in/" target="_blank">सरकारी AGMARKNET मंडी पोर्टल खोलें ↗</a>
+<a href="https://data.gov.in/catalog/current-daily-price-various-commodities-various-markets-mandi" target="_blank">भारत सरकार का दैनिक मंडी भाव डेटा ↗</a>
+<a href="https://enam.gov.in/" target="_blank">e-NAM राष्ट्रीय कृषि बाजार ↗</a>
+</div>
+<p class="muted">नोट: सरकारी डेटा का ऐप के अंदर स्वचालित प्रदर्शन API कुंजी / डेटा सेवा की उपलब्धता और अनुमति पर निर्भर है। इस संस्करण में आधिकारिक लाइव रिपोर्ट तक सीधा रास्ता दिया गया है; कोई भाव नकली रूप से नहीं भरा गया है।</p>
+</section>
+
+<section class="card" id="suchna">
+<h2>🏛️ नई सरकारी सूचना और योजनाएँ</h2>
+<p>उत्तर प्रदेश कृषि विभाग के आधिकारिक पोर्टल पर उपलब्ध घोषणाएँ, योजनाएँ, अनुदान और आवेदन की जानकारी देखें।</p>
+<div class="tile"><b>किसान हेल्पलाइन — उत्तर प्रदेश</b><div class="stat">0522-2317003</div><p class="muted">सोमवार से शुक्रवार, सुबह 10 बजे से शाम 6 बजे तक (विभागीय सूचना के अनुसार)।</p><a class="btn" href="tel:05222317003">हेल्पलाइन पर कॉल करें</a></div>
+<div class="links">
+<a href="https://agridarshan.up.gov.in/" target="_blank">उत्तर प्रदेश कृषि विभाग — नई घोषणाएँ, योजनाएँ व सेवाएँ ↗</a>
+<a href="https://pmkisan.gov.in/" target="_blank">PM-किसान सम्मान निधि — स्थिति / e-KYC ↗</a>
+<a href="https://www.myscheme.gov.in/" target="_blank">मेरी योजना — सरकारी योजनाओं की पात्रता ↗</a>
+<a href="https://www.pib.gov.in/" target="_blank">PIB — केंद्र सरकार की आधिकारिक घोषणाएँ ↗</a>
+<a href="https://soilhealth.dac.gov.in/" target="_blank">मृदा स्वास्थ्य कार्ड ↗</a>
+<a href="https://mkisan.gov.in/" target="_blank">mKisan किसान संदेश ↗</a>
+</div>
+<p class="muted">सूचनाएँ संबंधित सरकारी पोर्टल पर प्रकाशित होने के अनुसार बदलती हैं। आवेदन की अंतिम तारीख, पात्रता और अनुदान की पुष्टि मूल सरकारी सूचना से करें।</p>
+</section>
+
+<section class="card" id="quiz"><h2>🧠 आज का कृषि ज्ञान प्रश्न</h2><p class="muted">प्रश्न तारीख के अनुसार बदलता है। सही उत्तर पर 10 अंक।</p><p id="question" style="font-weight:700"></p><div id="options"></div><p id="quizMsg" aria-live="polite"></p><div class="grid"><div class="tile"><div class="muted">कुल अंक (इस फोन पर)</div><div class="stat" id="score">0</div></div><div class="tile"><div class="muted">हल किए प्रश्न</div><div class="stat" id="answered">0</div></div></div><p class="muted">अंक केवल इसी फोन में सेव होते हैं। साझा Top 10 रैंकिंग के लिए सर्वर/डेटाबेस चाहिए; इस मुफ्त संस्करण में वह चालू नहीं है।</p></section>
+
+<section class="card" id="fasal"><h2>🌱 फसल सलाह</h2>
+<p><b>गेहूँ:</b> बुवाई से पहले पर्याप्त नमी, अच्छी जल-निकासी और प्रमाणित बीज रखें।</p>
+<p><b>सरसों:</b> समय पर बुवाई करें और शुरुआती खरपतवार नियंत्रण पर ध्यान दें।</p>
+<p><b>चना व मटर:</b> जलभराव से बचाएँ; बीज की गुणवत्ता जाँचें।</p>
+<p><b>आलू:</b> स्वस्थ बीज-कंद चुनें और जरूरत के अनुसार हल्की सिंचाई करें।</p>
+<p><b>धान व गन्ना:</b> फसल की अवस्था और स्थानीय कृषि सलाह के अनुसार सिंचाई व पोषण प्रबंधन करें।</p>
+<div class="links"><a href="https://farmer.gov.in/" target="_blank">किसान पोर्टल ↗</a><a href="https://agmarknet.gov.in/" target="_blank">मंडी जानकारी ↗</a></div></section>
+
+<section class="card" id="profile"><h2>👨‍🌾 किसान प्रोफाइल</h2><p class="muted">वैकल्पिक जानकारी; OTP या मोबाइल नंबर नहीं। डेटा इसी फोन में रहेगा।</p>
+<label>किसान का नाम</label><input id="name" placeholder="अपना नाम">
+<label>गाँव का नाम</label><input id="village" placeholder="गाँव">
+<label>खेत का क्षेत्रफल</label><input id="area" type="number" min="0" step="any" placeholder="क्षेत्रफल">
+<label>इकाई</label><select id="unit"><option>बीघा</option><option>एकड़</option><option>हेक्टेयर</option></select>
+<button onclick="saveFarmer()">जानकारी सुरक्षित करें</button> <button class="secondary" onclick="clearFarmer()">प्रोफाइल मिटाएँ</button><p id="profileMsg"></p></section>
+
+<section class="card" id="contact"><h2>📞 दुकान से संपर्क</h2><p><b>विकास उर्वरक विक्रेता (VUV)</b><br>बसखारी, अंबेडकर नगर, उत्तर प्रदेश</p><p>मदनलाल यादव: <a href="tel:8726088430">8726088430</a></p><p>विकास यादव: <a href="tel:7388799010">7388799010</a></p></section>
+<div class="notice">यह ऐप सामान्य कृषि जानकारी देता है। खाद / कीटनाशक की मात्रा और रोग उपचार के लिए मिट्टी जाँच तथा स्थानीय कृषि विशेषज्ञ की सलाह लें।</div>
+</main>
+<footer>VUV किसान सेवा · आधिकारिक स्रोतों के लिंक · मुफ्त सार्वजनिक मौसम सेवा</footer>
+
+<script>
+const weatherText={0:"साफ आसमान",1:"मुख्यतः साफ",2:"आंशिक बादल",3:"बादल",45:"कोहरा",48:"घना कोहरा",51:"हल्की बूंदाबांदी",53:"बूंदाबांदी",55:"तेज बूंदाबांदी",61:"हल्की बारिश",63:"मध्यम बारिश",65:"तेज बारिश",80:"हल्की बौछार",81:"मध्यम बौछार",82:"तेज बौछार",95:"गरज-चमक के साथ बारिश",96:"ओलों के साथ गरज-चमक",99:"तेज ओलों के साथ गरज-चमक"};
+function weatherLabel(code){return weatherText[code]||"स्थिति उपलब्ध नहीं"}
+function dayHindi(iso){return new Date(iso+"T12:00:00").toLocaleDateString("hi-IN",{weekday:"short",day:"numeric",month:"short"})}
+async function loadWeather(){
+ const status=document.getElementById("weatherStatus");status.textContent="मौसम का ताज़ा डेटा लोड हो रहा है…";
+ try{
+ const url="https://api.open-meteo.com/v1/forecast?latitude=26.40&longitude=82.70&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum&forecast_days=3&timezone=Asia%2FKolkata";
+ const response=await fetch(url,{cache:"no-store"});if(!response.ok)throw new Error("weather");
+ const data=await response.json(),c=data.current,d=data.daily;
+ document.getElementById("wTemp").textContent=Math.round(c.temperature_2m)+"°C";
+ document.getElementById("wFeels").textContent=Math.round(c.apparent_temperature)+"°C";
+ document.getElementById("wHumidity").textContent=c.relative_humidity_2m+"%";
+ document.getElementById("wWind").textContent=Math.round(c.wind_speed_10m)+" km/h";
+ document.getElementById("wCondition").textContent=weatherLabel(c.weather_code);
+ document.getElementById("wRain").textContent=(d.precipitation_probability_max?.[0]??"—")+"% (अनुमान)";
+ document.getElementById("wUpdated").textContent="अंतिम अपडेट: "+new Date().toLocaleString("hi-IN");
+ document.getElementById("weatherForecast").innerHTML=d.time.map((date,i)=>'<div class="tile"><b>'+dayHindi(date)+'</b><p>'+weatherLabel(d.weather_code[i])+'</p><p>अधिकतम '+Math.round(d.temperature_2m_max[i])+'°C · न्यूनतम '+Math.round(d.temperature_2m_min[i])+'°C</p><p>बारिश की संभावना '+(d.precipitation_probability_max?.[i]??"—")+'%</p><p>बारिश '+(d.precipitation_sum?.[i]??0)+' mm</p></div>').join("");
+ status.textContent="लाइव मौसम डेटा अपडेट हो गया।";
+ }catch(e){status.textContent="अभी मौसम डेटा नहीं मिल पाया। इंटरनेट जाँचकर फिर अपडेट करें।";document.getElementById("wCondition").textContent="मौसम डेटा उपलब्ध नहीं";document.getElementById("weatherForecast").innerHTML='<div class="tile">कृपया बाद में फिर प्रयास करें या IMD की आधिकारिक चेतावनी देखें।</div>';}
+}
+function openMandi(){const c=document.getElementById("commodity").value;const d=document.getElementById("mandiDistrict").value;const url="https://agmarknet.gov.in/";window.open(url,"_blank");}
+const qs=[
+{q:"गेहूँ की बुवाई के लिए कौन-सा बीज चुनना चाहिए?",o:["टूटा बीज","प्रमाणित और स्वस्थ बीज","सड़ा बीज"],a:1},
+{q:"चना की फसल के लिए कैसी जल-निकासी जरूरी है?",o:["अच्छी जल-निकासी","लगातार जलभराव","कोई जरूरत नहीं"],a:0},
+{q:"मिट्टी की जाँच से क्या पता चलता है?",o:["खाद की जरूरत","मोबाइल नेटवर्क","मंडी का समय"],a:0},
+{q:"कीटनाशक छिड़कते समय क्या पहनना चाहिए?",o:["नंगे हाथ","दस्ताने और मास्क","कुछ नहीं"],a:1},
+{q:"खरपतवार फसल से किसके लिए प्रतिस्पर्धा करते हैं?",o:["पानी और पोषक तत्व","मोबाइल चार्ज","मंडी भाव"],a:0},
+{q:"बीज उपचार का उद्देश्य क्या है?",o:["बीजजनित रोगों का जोखिम घटाना","अंकुरण रोकना","बीज सड़ाना"],a:0},
+{q:"फसल में रोग दिखने पर पहला कदम क्या है?",o:["बिना पहचान दवा","सही पहचान और सलाह","दोगुनी दवा"],a:1}
+];
+const today=new Date(),key=today.getFullYear()+"-"+(today.getMonth()+1)+"-"+today.getDate(),q=qs[Math.floor((today-new Date(today.getFullYear(),0,0))/86400000)%qs.length];
+let done=localStorage.getItem("vuvDone")==key;
+function renderQuiz(){document.getElementById("question").textContent=q.q;const box=document.getElementById("options");box.innerHTML="";q.o.forEach((x,i)=>{const b=document.createElement("button");b.className="option";b.textContent=x;b.disabled=done;b.onclick=()=>answer(i);box.appendChild(b)});if(done)document.getElementById("quizMsg").textContent="आज का प्रश्न हल हो चुका है।";stats()}
+function answer(i){if(done)return;done=true;localStorage.setItem("vuvDone",key);let s=Number(localStorage.getItem("vuvScore")||0),a=Number(localStorage.getItem("vuvAnswered")||0);if(i===q.a){s+=10;document.getElementById("quizMsg").textContent="सही जवाब! 10 अंक मिले।"}else document.getElementById("quizMsg").textContent="सही उत्तर: "+q.o[q.a];a++;localStorage.setItem("vuvScore",s);localStorage.setItem("vuvAnswered",a);renderQuiz()}
+function stats(){document.getElementById("score").textContent=localStorage.getItem("vuvScore")||0;document.getElementById("answered").textContent=localStorage.getItem("vuvAnswered")||0}
+function saveFarmer(){const p={name:name.value.trim(),village:village.value.trim(),area:area.value,unit:unit.value};if(!p.name||!p.village||!p.area||Number(p.area)<=0){profileMsg.textContent="कृपया नाम, गाँव और सही क्षेत्रफल भरें।";return}localStorage.setItem("vuvFarmer",JSON.stringify(p));profileMsg.textContent="जानकारी इसी फोन में सुरक्षित हो गई।"}
+function clearFarmer(){localStorage.removeItem("vuvFarmer");["name","village","area"].forEach(x=>document.getElementById(x).value="");profileMsg.textContent="प्रोफाइल हटा दी गई।"}
+function loadFarmer(){try{const p=JSON.parse(localStorage.getItem("vuvFarmer")||"null");if(p){name.value=p.name||"";village.value=p.village||"";area.value=p.area||"";unit.value=p.unit||"बीघा"}}catch(e){}}
+renderQuiz();loadFarmer();loadWeather();
+</script>
+</body></html>
