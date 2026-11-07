@@ -1,7 +1,11 @@
-name: Build VUV Android APK
+
+name: Build VUV Kisan Seva APK
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -11,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Download repository
         uses: actions/checkout@v4
 
       - name: Setup Node
@@ -25,17 +29,63 @@ jobs:
           distribution: temurin
           java-version: 21
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
       - name: Install Capacitor
         run: |
           npm init -y
-          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7
+          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7 @capacitor/app@7 esbuild
 
-      - name: Prepare app
+      - name: Prepare app files
         run: |
-          mkdir www
+          mkdir -p www
           cp index.html www/index.html
-          npx cap init "VUV Kisan Seva" "com.vuv.kisanseva" --web-dir=www
+          cp -r assets www/assets
+
+      - name: Bundle Android back button handler
+        run: |
+          npx esbuild back-handler.js --bundle --format=iife --outfile=www/back-handler.js
+
+      - name: Create Capacitor configuration
+        run: |
+          cat > capacitor.config.json <<'EOF'
+          {
+            "appId": "com.vuv.kisanseva",
+            "appName": "VUV Kisan Seva",
+            "webDir": "www"
+          }
+          EOF
+
+      - name: Add Android platform
+        run: |
           npx cap add android
+
+      - name: Generate launcher icons
+        run: |
+          python -m pip install pillow
+          python - <<'PY'
+          from PIL import Image
+          import os
+
+          source = Image.open("assets/vuv-logo.png").convert("RGBA")
+          sizes = {
+              "mdpi": 48,
+              "hdpi": 72,
+              "xhdpi": 96,
+              "xxhdpi": 144,
+              "xxxhdpi": 192
+          }
+
+          for density, size in sizes.items():
+              folder = f"android/app/src/main/res/mipmap-{density}"
+              os.makedirs(folder, exist_ok=True)
+              icon = source.resize((size, size), Image.Resampling.LANCZOS)
+              icon.save(f"{folder}/ic_launcher.png")
+              icon.save(f"{folder}/ic_launcher_round.png")
+          PY
 
       - name: Build APK
         run: |
