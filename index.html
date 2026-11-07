@@ -13,12 +13,14 @@ button,a,input,select{font:inherit}a{color:var(--green)}
 .topbar{background:linear-gradient(135deg,#0d542b,#238346);color:#fff;padding:15px 16px 17px;border-radius:0 0 24px 24px;box-shadow:0 5px 18px #0d542b25}
 .brand{display:flex;align-items:center;gap:12px}.brand img{width:64px;height:64px;object-fit:cover;border-radius:50%;border:3px solid #f8d75b;background:#fff}.brand h1{font-size:21px;margin:0 0 3px}.brand p{font-size:12px;margin:0;color:#e7f5e9}
 .hero{margin:14px auto 0;max-width:760px;background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 4px 16px #173a2114}.hero img{width:100%;display:block;max-height:245px;object-fit:cover;object-position:center 40%}.hero-caption{padding:12px 14px;background:linear-gradient(90deg,#f1f9f1,#fff)}.hero-caption b{color:var(--green);font-size:16px}.hero-caption p{margin:4px 0 0;font-size:12px;color:var(--muted)}
-main{max-width:760px;margin:auto;padding:12px}.section{background:var(--white);border:1px solid var(--line);border-radius:17px;padding:15px;margin:13px 0;box-shadow:0 3px 12px #173a2108;scroll-margin-top:72px}.section h2{font-size:18px;margin:0 0 11px;color:var(--green);display:flex;align-items:center;gap:8px}.section h3{font-size:15px;margin:13px 0 7px}.muted{color:var(--muted);font-size:12px;line-height:1.5}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.tile{background:#f0f7f1;border:1px solid #e1eee3;border-radius:13px;padding:11px}.tile b{display:block;font-size:13px}.tile p{margin:5px 0 0;font-size:12px;line-height:1.45}.service-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.service{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:91px;padding:10px 5px;background:#f4faf4;border:1px solid #dceade;border-radius:14px;text-decoration:none;color:var(--ink);font-size:12px;font-weight:700;gap:5px}.service .ico{width:37px;height:37px;border-radius:12px;display:grid;place-items:center;background:#dff1e1;font-size:21px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:10px;padding:10px 12px;background:var(--green);color:#fff;text-decoration:none;font-size:13px;font-weight:700;cursor:pointer}.btn.light{background:#e9f5eb;color:var(--green);border:1px solid #cfe4d2}.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.status{background:#eff8ef;border-radius:11px;padding:11px;font-size:13px;line-height:1.5}.notice{background:#fff8e6;border-left:4px solid #e5b83e;border-radius:9px;padding:10px;font-size:12px;line-height:1.5;margin-top:10px}.links a{display:block;padding:10px 1px;text-decoration:none;border-bottom:1px solid var(--line);font-size:13px;font-weight:600}.links a:last-child{border-bottom:0}
+main{max-width:760px;margin:auto;padding:12px}.section{display:none;background:var(--white);border:1px solid var(--line);border-radius:17px;padding:15px;margin:13px 0;box-shadow:0 3px 12px #173a2108;scroll-margin-top:72px}.section.active{display:block}.section h2{font-size:18px;margin:0 0 11px;color:var(--green);display:flex;align-items:center;gap:8px}.section h3{font-size:15px;margin:13px 0 7px}.muted{color:var(--muted);font-size:12px;line-height:1.5}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.tile{background:#f0f7f1;border:1px solid #e1eee3;border-radius:13px;padding:11px}.tile b{display:block;font-size:13px}.tile p{margin:5px 0 0;font-size:12px;line-height:1.45}.service-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.service{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:91px;padding:10px 5px;background:#f4faf4;border:1px solid #dceade;border-radius:14px;text-decoration:none;color:var(--ink);font-size:12px;font-weight:700;gap:5px}.service .ico{width:37px;height:37px;border-radius:12px;display:grid;place-items:center;background:#dff1e1;font-size:21px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:10px;padding:10px 12px;background:var(--green);color:#fff;text-decoration:none;font-size:13px;font-weight:700;cursor:pointer}.btn.light{background:#e9f5eb;color:var(--green);border:1px solid #cfe4d2}.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.status{background:#eff8ef;border-radius:11px;padding:11px;font-size:13px;line-height:1.5}.notice{background:#fff8e6;border-left:4px solid #e5b83e;border-radius:9px;padding:10px;font-size:12px;line-height:1.5;margin-top:10px}.links a{display:block;padding:10px 1px;text-decoration:none;border-bottom:1px solid var(--line);font-size:13px;font-weight:600}.links a:last-child{border-bottom:0}
 .stat{font-size:22px;font-weight:800;color:var(--green);margin-top:3px}.forecast .tile{padding:9px}.forecast .tile p{font-size:11px}
 label{display:block;font-size:13px;font-weight:700;margin:8px 0 4px}input,select{width:100%;padding:10px;border:1px solid #cadbcc;border-radius:10px;background:#fff;color:var(--ink);font-size:14px}button:disabled{opacity:.55;cursor:not-allowed}.quiz-option{display:block;width:100%;text-align:left;margin:7px 0;background:#f2f8f2;color:var(--ink);border:1px solid #d9e8dc;border-radius:10px;padding:11px;font-size:13px}.quiz-option.correct{border-color:#218044;background:#e6f6e9}.quiz-option.wrong{border-color:#c55;background:#fff0f0}
 .bottomnav{position:fixed;bottom:0;left:0;right:0;z-index:20;background:#fff;border-top:1px solid #dbe8dd;display:grid;grid-template-columns:repeat(4,1fr);padding:6px 4px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -4px 15px #173a2110}.bottomnav a{display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:#627368;font-size:10px;font-weight:700;padding:4px 0}.bottomnav a span:first-child{font-size:19px}.bottomnav a.active{color:var(--green)}.bottomnav a.active span:first-child{background:#e4f3e6;border:1px solid #cce4d0;border-radius:10px;padding:2px 12px}
 footer{text-align:center;padding:18px 10px;color:var(--muted);font-size:11px}
 @media(min-width:560px){.service-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.hero img{max-height:280px}}@media(max-width:370px){.service-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.brand h1{font-size:18px}}
+body:not([data-screen="home"]) .hero{display:none}
+.profile-photo-wrap{display:flex;align-items:center;gap:12px;margin:10px 0}.profile-photo{width:84px;height:84px;border-radius:50%;object-fit:cover;border:3px solid #d8eadb;background:#f4faf4}.profile-photo-placeholder{display:grid;place-items:center;color:#66806c;font-size:12px;text-align:center}
 </style>
 </head>
 <body>
@@ -27,7 +29,7 @@ footer{text-align:center;padding:18px 10px;color:var(--muted);font-size:11px}
 </header>
 <div class="hero"><img src="assets/vuv-logo.png" alt="विकास उर्वरक विक्रेता VUV का किसान सेवा लोगो"><div class="hero-caption"><b>खेती भी… तरक्की भी…</b><p>आपके गाँव और खेत के लिए उपयोगी जानकारी, एक ही जगह</p></div></div>
 <main>
-<section class="section" id="home">
+<section class="section active" id="home">
  <h2>🌾 किसान सेवा केंद्र</h2>
  <p class="muted">बसखारी, अंबेडकर नगर और आसपास के किसान भाइयों के लिए</p>
  <div class="service-grid">
@@ -140,7 +142,8 @@ footer{text-align:center;padding:18px 10px;color:var(--muted);font-size:11px}
 </section>
 
 <section class="section" id="profile">
- <h2>👨‍🌾 किसान प्रोफाइल</h2><p class="muted">OTP या अनिवार्य मोबाइल नंबर नहीं। जानकारी इसी फोन में सेव होगी।</p>
+ <h2>👨‍🌾 मेरा खाता / किसान प्रोफाइल</h2><p class="muted">अपनी फोटो और जानकारी इसी फोन में सुरक्षित करें। OTP या मोबाइल नंबर जरूरी नहीं।</p>
+ <div class="profile-photo-wrap"><img id="farmerPhotoPreview" class="profile-photo profile-photo-placeholder" alt="किसान की प्रोफाइल फोटो" src=""/><div><label for="farmerPhoto">अपनी फोटो चुनें</label><input id="farmerPhoto" type="file" accept="image/*"/><p class="muted">फोटो केवल इसी फोन में रखी जाएगी।</p></div></div>
  <label for="farmerName">किसान का नाम</label><input id="farmerName" placeholder="अपना नाम">
  <label for="farmerVillage">गाँव का नाम</label><input id="farmerVillage" placeholder="अपने गाँव का नाम">
  <label for="farmerArea">खेत का क्षेत्रफल</label><input id="farmerArea" type="number" min="0" step="any" placeholder="क्षेत्रफल">
@@ -228,14 +231,32 @@ function answerQuiz(i){
  if(quizDone)return;quizDone=true;try{localStorage.setItem("vuvQuizDate",dateKey);let score=Number(localStorage.getItem("vuvScore")||0),answered=Number(localStorage.getItem("vuvAnswered")||0);if(i===question.a){score+=10;byId("quizMsg").textContent="सही जवाब! आपको 10 अंक मिले।"}else byId("quizMsg").textContent="सही उत्तर: "+question.o[question.a];localStorage.setItem("vuvScore",String(score));localStorage.setItem("vuvAnswered",String(answered+1));}catch(e){byId("quizMsg").textContent="फोन में सेव करने की अनुमति उपलब्ध नहीं है।"}renderQuiz();
 }
 function updateScore(){try{byId("score").textContent=localStorage.getItem("vuvScore")||"0";byId("answered").textContent=localStorage.getItem("vuvAnswered")||"0"}catch(e){}}
+let selectedFarmerPhoto="";
 function saveFarmer(){
- const p={name:byId("farmerName").value.trim(),village:byId("farmerVillage").value.trim(),area:byId("farmerArea").value,unit:byId("farmerUnit").value};
+ const p={name:byId("farmerName").value.trim(),village:byId("farmerVillage").value.trim(),area:byId("farmerArea").value,unit:byId("farmerUnit").value,photo:selectedFarmerPhoto};
  if(!p.name||!p.village||!p.area||Number(p.area)<=0){byId("profileMsg").textContent="कृपया नाम, गाँव और सही क्षेत्रफल भरें।";return}
- try{localStorage.setItem("vuvFarmer",JSON.stringify(p));byId("profileMsg").textContent="जानकारी इसी फोन में सुरक्षित हो गई।"}catch(e){byId("profileMsg").textContent="इस फोन में जानकारी सेव नहीं हो पाई।"}
+ try{localStorage.setItem("vuvFarmer",JSON.stringify(p));byId("profileMsg").textContent="आपकी जानकारी और फोटो इसी फोन में सुरक्षित हो गई।"}catch(e){byId("profileMsg").textContent="फोटो बड़ी होने से सेव नहीं हुई। छोटी फोटो चुनकर फिर कोशिश करें।"}
 }
-function clearFarmer(){try{localStorage.removeItem("vuvFarmer")}catch(e){}["farmerName","farmerVillage","farmerArea"].forEach(id=>byId(id).value="");byId("profileMsg").textContent="प्रोफाइल हटा दी गई।"}
-function loadFarmer(){try{const p=JSON.parse(localStorage.getItem("vuvFarmer")||"null");if(p){byId("farmerName").value=p.name||"";byId("farmerVillage").value=p.village||"";byId("farmerArea").value=p.area||"";byId("farmerUnit").value=p.unit||"बीघा"}}catch(e){}}
-document.querySelectorAll(".bottomnav a").forEach(a=>a.addEventListener("click",()=>{document.querySelectorAll(".bottomnav a").forEach(x=>x.classList.remove("active"));a.classList.add("active")}));
+function clearFarmer(){try{localStorage.removeItem("vuvFarmer")}catch(e){}["farmerName","farmerVillage","farmerArea"].forEach(id=>byId(id).value="");selectedFarmerPhoto="";byId("farmerPhotoPreview").src="";byId("profileMsg").textContent="प्रोफाइल हटा दी गई।"}
+function loadFarmer(){try{const p=JSON.parse(localStorage.getItem("vuvFarmer")||"null");if(p){byId("farmerName").value=p.name||"";byId("farmerVillage").value=p.village||"";byId("farmerArea").value=p.area||"";byId("farmerUnit").value=p.unit||"बीघा";selectedFarmerPhoto=p.photo||"";if(selectedFarmerPhoto)byId("farmerPhotoPreview").src=selectedFarmerPhoto}}catch(e){}}
+byId("farmerPhoto").addEventListener("change",e=>{const file=e.target.files?.[0];if(!file)return;if(!file.type.startsWith("image/")){byId("profileMsg").textContent="कृपया फोटो फ़ाइल चुनें।";return;}const reader=new FileReader();reader.onload=()=>{const img=new Image();img.onload=()=>{const canvas=document.createElement("canvas"),max=420,scale=Math.min(1,max/Math.max(img.width,img.height));canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);selectedFarmerPhoto=canvas.toDataURL("image/jpeg",0.72);byId("farmerPhotoPreview").src=selectedFarmerPhoto;byId("profileMsg").textContent="फोटो चुन ली गई है। अब जानकारी सुरक्षित करें।"};img.src=reader.result};reader.readAsDataURL(file);});
+function setActiveNav(id){
+ const target=(id==="profile")?3:(id==="news")?2:0;
+ document.querySelectorAll(".bottomnav a").forEach((a,i)=>a.classList.toggle("active",i===target));
+}
+function showScreen(id,push=true){
+ const valid=["home","weather","mandi","crops","fertilizer","schemes","protection","news","quiz","profile","contact"];
+ if(!valid.includes(id))id="home";
+ document.querySelectorAll("main > .section").forEach(s=>s.classList.toggle("active",s.id===id));
+ document.body.dataset.screen=id;setActiveNav(id);window.scrollTo({top:0,behavior:"auto"});
+ if(push){history.pushState({screen:id},"", "#"+id);}
+}
+window.addEventListener("popstate",e=>showScreen(e.state?.screen||"home",false));
+// Service cards and navigation links open one page at a time.
+document.querySelectorAll(".service").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();showScreen(a.getAttribute("href").slice(1));}));
+document.querySelectorAll(".bottomnav a").forEach((a,i)=>a.addEventListener("click",e=>{e.preventDefault();showScreen(["home","home","news","profile"][i]);}));
+if(!history.state?.screen)history.replaceState({screen:"home"},"","#home");
+document.body.dataset.screen=history.state?.screen||"home";
 renderQuiz();loadFarmer();loadWeather();
 </script>
 <script src="back-handler.js"></script>
