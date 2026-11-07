@@ -1,0 +1,21 @@
+VUV KISAN SEVA — UPLOAD PACKAGE
+
+इस पैकेज में ये फाइलें और फोल्डर हैं:
+
+VUV-Kisan-Seva-Final-Update/
+  index.html
+  back-handler.js
+  README-हिंदी.txt
+  assets/
+    vuv-logo.png
+  .github/
+    workflows/
+      build-apk.yml
+
+जरूरी: ZIP को सीधे GitHub पर upload न करें। पहले Extract करें।
+GitHub repository में index.html और back-handler.js root में रखें,
+assets/vuv-logo.png को assets नाम के folder में रखें, और
+.github/workflows/build-apk.yml को उसी exact path पर रखें।
+README केवल निर्देश है; इसे upload करना जरूरी नहीं।
+
+APK workflow debug APK बनाता है; यह Play Store release-signed APK नहीं है।
