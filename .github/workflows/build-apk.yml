@@ -1,4 +1,3 @@
-
 name: Build VUV Kisan Seva APK
 
 on:
@@ -41,9 +40,30 @@ jobs:
 
       - name: Prepare app files
         run: |
-          mkdir -p www
+          mkdir -p assets www
+
+          if [ ! -f assets/vuv-logo.png ]; then
+            if [ -f vuv-logo.png ]; then
+              cp vuv-logo.png assets/vuv-logo.png
+            else
+              echo "ERROR: VUV logo file is missing"
+              exit 1
+            fi
+          fi
+
+          if [ ! -f index.html ]; then
+            echo "ERROR: index.html is missing"
+            exit 1
+          fi
+
+          if [ ! -f back-handler.js ]; then
+            echo "ERROR: back-handler.js is missing"
+            exit 1
+          fi
+
           cp index.html www/index.html
-          cp -r assets www/assets
+          mkdir -p www/assets
+          cp -r assets/. www/assets/
 
       - name: Bundle Android back button handler
         run: |
@@ -66,11 +86,13 @@ jobs:
       - name: Generate launcher icons
         run: |
           python -m pip install pillow
+
           python - <<'PY'
           from PIL import Image
           import os
 
           source = Image.open("assets/vuv-logo.png").convert("RGBA")
+
           sizes = {
               "mdpi": 48,
               "hdpi": 72,
@@ -82,7 +104,12 @@ jobs:
           for density, size in sizes.items():
               folder = f"android/app/src/main/res/mipmap-{density}"
               os.makedirs(folder, exist_ok=True)
-              icon = source.resize((size, size), Image.Resampling.LANCZOS)
+
+              icon = source.resize(
+                  (size, size),
+                  Image.Resampling.LANCZOS
+              )
+
               icon.save(f"{folder}/ic_launcher.png")
               icon.save(f"{folder}/ic_launcher_round.png")
           PY
