@@ -1,14 +1,29 @@
 from pathlib import Path
-import sys
 from PIL import Image, ImageOps
-res=Path(sys.argv[1]); src=Path(sys.argv[2])
-im=Image.open(src).convert("RGBA")
-# Fill square launcher canvas with the existing complete circular VUV badge.
-for density,size in [("mdpi",48),("hdpi",72),("xhdpi",96),("xxhdpi",144),("xxxhdpi",192)]:
-    d=res/f"mipmap-{density}"; d.mkdir(parents=True,exist_ok=True)
-    icon=ImageOps.fit(im,(size,size),method=Image.Resampling.LANCZOS,centering=(0.5,0.5))
-    icon.save(d/"ic_launcher.png",optimize=True)
-    icon.save(d/"ic_launcher_round.png",optimize=True)
-# Remove adaptive XML overrides so Android uses the generated PNG icons above.
-for p in [res/"mipmap-anydpi-v26"/"ic_launcher.xml",res/"mipmap-anydpi-v26"/"ic_launcher_round.xml"]:
-    if p.exists(): p.unlink()
+
+source = Path('app-icon-photo.png')
+res = Path('android/app/src/main/res')
+if not source.is_file():
+    raise SystemExit('ERROR: app-icon-photo.png is missing')
+
+# Keep the supplied photograph intact: only scale it proportionally and
+# place it on a transparent square canvas. No filters, retouching or text.
+photo = Image.open(source).convert('RGBA')
+side = max(photo.width, photo.height)
+canvas = Image.new('RGBA', (side, side), (0, 0, 0, 0))
+photo.thumbnail((side, side), Image.Resampling.LANCZOS)
+canvas.alpha_composite(photo, ((side - photo.width) // 2, (side - photo.height) // 2))
+
+for density, size in [('mdpi', 48), ('hdpi', 72), ('xhdpi', 96), ('xxhdpi', 144), ('xxxhdpi', 192)]:
+    folder = res / f'mipmap-{density}'
+    folder.mkdir(parents=True, exist_ok=True)
+    icon = canvas.resize((size, size), Image.Resampling.LANCZOS)
+    icon.save(folder / 'ic_launcher.png', optimize=True)
+    icon.save(folder / 'ic_launcher_round.png', optimize=True)
+
+# Remove generated adaptive XML overrides so the supplied photo-based PNGs
+# are used consistently by the launcher on this build.
+for name in ('ic_launcher.xml', 'ic_launcher_round.xml'):
+    p = res / 'mipmap-anydpi-v26' / name
+    if p.exists():
+        p.unlink()
