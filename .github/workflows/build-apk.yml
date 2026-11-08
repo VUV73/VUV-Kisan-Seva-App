@@ -104,7 +104,16 @@ jobs:
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+
+          # Gradle wrapper defaults to a 10-second download timeout.
+          # Increase it to 2 minutes to handle slower download connections.
+          if grep -q '^networkTimeout=' gradle/wrapper/gradle-wrapper.properties; then
+            sed -i 's/^networkTimeout=.*/networkTimeout=120000/' gradle/wrapper/gradle-wrapper.properties
+          else
+            echo 'networkTimeout=120000' >> gradle/wrapper/gradle-wrapper.properties
+          fi
+
+          ./gradlew --no-daemon assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
