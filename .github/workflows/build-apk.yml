@@ -6,12 +6,14 @@ on:
     branches:
       - main
 
+# Least-privilege permission: this workflow only needs to read repository files.
 permissions:
   contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Download repository
@@ -51,6 +53,16 @@ jobs:
             fi
           fi
 
+          if [ ! -f app-icon-photo.png ]; then
+            echo "ERROR: app-icon-photo.png is missing from the repository root"
+            exit 1
+          fi
+
+          if [ ! -f make-icons.py ]; then
+            echo "ERROR: make-icons.py is missing from the repository root"
+            exit 1
+          fi
+
           if [ ! -f index.html ]; then
             echo "ERROR: index.html is missing"
             exit 1
@@ -83,36 +95,10 @@ jobs:
         run: |
           npx cap add android
 
-      - name: Generate launcher icons
+      - name: Generate launcher icons from supplied photo
         run: |
           python -m pip install pillow
-
-          python - <<'PY'
-          from PIL import Image
-          import os
-
-          source = Image.open("assets/vuv-logo.png").convert("RGBA")
-
-          sizes = {
-              "mdpi": 48,
-              "hdpi": 72,
-              "xhdpi": 96,
-              "xxhdpi": 144,
-              "xxxhdpi": 192
-          }
-
-          for density, size in sizes.items():
-              folder = f"android/app/src/main/res/mipmap-{density}"
-              os.makedirs(folder, exist_ok=True)
-
-              icon = source.resize(
-                  (size, size),
-                  Image.Resampling.LANCZOS
-              )
-
-              icon.save(f"{folder}/ic_launcher.png")
-              icon.save(f"{folder}/ic_launcher_round.png")
-          PY
+          python make-icons.py
 
       - name: Build APK
         run: |
