@@ -248,9 +248,17 @@ async function loadWeather(){
   byId("wTemp").textContent=Math.round(c.temperature_2m)+"°C";byId("wFeels").textContent=Math.round(c.apparent_temperature)+"°C";byId("wHumidity").textContent=c.relative_humidity_2m+"%";byId("wWind").textContent=Math.round(c.wind_speed_10m)+" km/h";
   byId("wCondition").textContent=weatherLabel(c.weather_code);byId("wRain").textContent=(d.precipitation_probability_max?.[0]??"—")+"% (अनुमान)";
   byId("wUpdated").textContent="अंतिम अपडेट: "+new Date().toLocaleString("hi-IN");
-  byId("weatherForecast").innerHTML=d.time.map((date,i)=>'<div class="tile"><b>'+dayHindi(date)+'</b><p>'+weatherLabel(d.weather_code[i])+'</p><p>अधिकतम '+Math.round(d.temperature_2m_max[i])+'°C · न्यूनतम '+Math.round(d.temperature_2m_min[i])+'°C</p><p>बारिश '+(d.precipitation_probability_max?.[i]??"—")+'% · '+(d.precipitation_sum?.[i]??0)+' mm</p></div>').join("");
+  const forecast=byId("weatherForecast");forecast.replaceChildren();
+  d.time.forEach((date,i)=>{
+   const tile=document.createElement("div");tile.className="tile";
+   const title=document.createElement("b");title.textContent=dayHindi(date);tile.appendChild(title);
+   const condition=document.createElement("p");condition.textContent=weatherLabel(d.weather_code[i]);tile.appendChild(condition);
+   const temperatures=document.createElement("p");temperatures.textContent="अधिकतम "+Math.round(d.temperature_2m_max[i])+"°C · न्यूनतम "+Math.round(d.temperature_2m_min[i])+"°C";tile.appendChild(temperatures);
+   const rain=document.createElement("p");rain.textContent="बारिश "+(d.precipitation_probability_max?.[i]??"—")+"% · "+(d.precipitation_sum?.[i]??0)+" mm";tile.appendChild(rain);
+   forecast.appendChild(tile);
+  });
   status.textContent="लाइव मौसम डेटा अपडेट हो गया।";
- }catch(e){status.textContent="अभी मौसम डेटा नहीं मिल पाया। इंटरनेट जाँचकर फिर प्रयास करें।";byId("wCondition").textContent="मौसम डेटा उपलब्ध नहीं";byId("weatherForecast").innerHTML='<div class="tile">IMD की आधिकारिक चेतावनी देखें या बाद में फिर प्रयास करें।</div>';}
+ }catch(e){status.textContent="अभी मौसम डेटा नहीं मिल पाया। इंटरनेट जाँचकर फिर प्रयास करें।";byId("wCondition").textContent="मौसम डेटा उपलब्ध नहीं";const fallback=document.createElement("div");fallback.className="tile";fallback.textContent="IMD की आधिकारिक चेतावनी देखें या बाद में फिर प्रयास करें।";byId("weatherForecast").replaceChildren(fallback);}
 }
 function openMandi(){const crop=byId("commodity").value,dist=byId("mandiDistrict").value;window.open("https://agmarknet.gov.in/","_blank","noopener");byId("mandiHint").textContent="सरकारी पोर्टल खुल गया है। वहाँ फसल में "+crop+" और जिले में "+dist+" चुनकर भाव देखें। कीमत की पुष्टि मंडी और तारीख देखकर करें।";}
 const questions=[
