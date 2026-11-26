@@ -14,9 +14,16 @@
 
 ## सुरक्षित साझा रैंकिंग और APK अपडेट — जरूरी अगला चरण
 
-### साझा किसान Top 10 रैंकिंग
-यह सुविधा केवल फोन के localStorage से संभव नहीं है। सभी किसानों के अंकों को एक ही सुरक्षित डेटाबेस में भेजना और वहाँ से पढ़ना होगा। इसके लिए Supabase backend जोड़ा जाना है। डेटाबेस में केवल किसान का दिखने वाला नाम, गाँव, अवधि और अंक रखे जाएँ; मोबाइल नंबर और खेत का क्षेत्रफल कभी सार्वजनिक न हों। अंकों की हेराफेरी रोकने के लिए सर्वर-साइड सत्यापन और सीमित write access जरूरी है। Supabase परियोजना इस repository से अलग user account में बनेगी; कोई database password या service-role key इस repository में commit नहीं करनी है।
+### साझा किसान Top 10 रैंकिंग — backend तैयार, Auth का एक विकल्प चालू करना बाकी
+- Supabase प्रोजेक्ट `VUV-Kisan-Seva` भारत (Mumbai) region में बनाया गया है।
+- निजी `vuv_private` schema में किसान की सार्वजनिक पहचान (नाम/गाँव), स्कोर और प्रश्न-उत्तर रिकॉर्ड अलग रखे गए हैं। मोबाइल नंबर और खेत का क्षेत्रफल सर्वर पर नहीं भेजे जाते।
+- सार्वजनिक Top 10 views केवल नाम, गाँव और अंक दिखाते हैं; daily, weekly और monthly रैंकिंग अलग हैं।
+- `vuv-quiz-submit` Edge Function सक्रिय है। सर्वर उत्तर की जाँच करता है, प्रति दिन अधिकतम 30 प्रश्न और हर प्रश्न का एक ही प्रयास लागू करता है। क्लाइंट सीधे अंक लिख नहीं सकता।
+- RLS और Security Advisor जाँच पूरी: अभी कोई security lint नहीं मिला।
+- **एक जरूरी सेटिंग:** Supabase Dashboard → Authentication → Sign In / Providers → Anonymous Sign-Ins को ON करके Save करें। इससे किसान बिना मोबाइल नंबर और OTP के सुरक्षित device-session बना पाएँगे। [यहाँ सीधे Auth Providers खोलें](https://supabase.com/dashboard/project/efgxnvvmtipqfibhsbri/auth/providers)।
+- इसके बाद नया APK build करके फोन पर जाँचना बाकी है। पुराने APK के ऊपर install करने से पहले signing-key की समस्या और किसान डेटा का backup ध्यान में रखें।
 
+किसी भी database password या service-role key को repository, ऐप या ChatGPT में न रखें। ऐप में केवल publishable key है; यह public client key है और सभी writes server-side function से नियंत्रित हैं।
 ### पुराने APK पर सुरक्षित अपडेट
 Workflow अब स्थायी release signing के बिना APK जारी नहीं करेगा। GitHub repository के Settings → Secrets and variables → Actions में ये चार **Repository secrets** बनाने होंगे:
 - VUV_KEYSTORE_BASE64 — release keystore की Base64 सामग्री
