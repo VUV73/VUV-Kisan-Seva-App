@@ -1,0 +1,50 @@
+name: Validate VUV Kisan Seva
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check required app files
+        run: |
+          test -s index.html
+          test -s back-handler.js
+          test -s make-icons.py
+          test -s app-icon-photo.png
+          test -s assets/vuv-logo.png
+      - name: Check embedded JavaScript syntax
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          html = Path("index.html").read_text(encoding="utf-8")
+          scripts = re.findall(r"<script(?:\\s[^>]*)?>([\\s\\S]*?)</script>", html, re.I)
+          inline = [s for s in scripts if s.strip()]
+          if not inline:
+              raise SystemExit("No inline JavaScript found")
+          Path("/tmp/vuv-inline.js").write_text("\\n;".join(inline), encoding="utf-8")
+          PY
+          node --check /tmp/vuv-inline.js
+          node --check back-handler.js
+      - name: Verify backup and privacy safeguards exist
+        run: |
+          grep -q 'function exportBackup' index.html
+          grep -q 'function importBackup' index.html
+          grep -q 'vuvFarmer' index.html
+          grep -q 'vuvScore' index.html
+          grep -q 'vuvAnswered' index.html
+          grep -q 'बैकअप की जानकारी इस फोन की मौजूदा प्रोफाइल' index.html
+          grep -q '8726088430' index.html
+          grep -q '7388799010' index.html
