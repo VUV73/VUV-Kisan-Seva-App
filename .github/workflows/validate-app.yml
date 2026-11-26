@@ -24,6 +24,30 @@ jobs:
           test -s make-icons.py
           test -s app-icon-photo.png
           test -s vuv-logo.png
+      - name: Verify navigation, quiz, and farmer progress safeguards
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          html = Path("index.html").read_text(encoding="utf-8")
+          nav_match = re.search(r'<nav class="bottomnav"[^>]*>(.*?)</nav>', html, re.S)
+          if not nav_match:
+              raise SystemExit("Bottom navigation is missing")
+          labels = re.findall(r'<span>([^<]+)</span></a>', nav_match.group(1))
+          expected = ["सभी सेवाएँ", "सूचनाएँ", "मेरा खाता"]
+          if labels != expected:
+              raise SystemExit(f"Bottom navigation mismatch: {labels!r}")
+          question_count = len(re.findall(r'\{q:', html))
+          if question_count != 60:
+              raise SystemExit(f"Expected 60 quiz questions, found {question_count}")
+          for element_id in ("weeklyPoints", "monthlyPoints", "weeklyAttempts", "monthlyAttempts"):
+              if f'id="{element_id}"' not in html:
+                  raise SystemExit(f"Missing progress report field: {element_id}")
+          for key in ("vuvFarmer", "vuvScore", "vuvAnswered", "vuvQuizHistory"):
+              if key not in html:
+                  raise SystemExit(f"Missing backup data key: {key}")
+          print("Three navigation tabs, 60 quiz questions, progress report, and backup keys verified.")
+          PY
       - name: Check embedded JavaScript syntax
         run: |
           python3 - <<'PY'
