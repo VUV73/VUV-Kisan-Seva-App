@@ -140,7 +140,11 @@ body:not([data-screen="home"]) .hero{display:none}
  <div class="grid"><div class="tile"><span class="muted">कुल अंक — इस फोन पर</span><div class="stat" id="score">0</div></div><div class="tile"><span class="muted">हल किए प्रश्न</span><div class="stat" id="answered">0</div></div></div>
  <h3>📊 आपकी प्रगति रिपोर्ट</h3>
  <div class="grid"><div class="tile"><span class="muted">पिछले 7 दिन के अंक</span><div class="stat" id="weeklyPoints">0</div></div><div class="tile"><span class="muted">पिछले 30 दिन के अंक</span><div class="stat" id="monthlyPoints">0</div></div><div class="tile"><span class="muted">पिछले 7 दिन के प्रश्न</span><div class="stat" id="weeklyAttempts">0</div></div><div class="tile"><span class="muted">पिछले 30 दिन के प्रश्न</span><div class="stat" id="monthlyAttempts">0</div></div></div>
- <div class="notice">यह आपकी इसी फोन पर सुरक्षित निजी प्रगति रिपोर्ट है। साझा Top 10 रैंकिंग के लिए सुरक्षित सर्वर और किसान पहचान व्यवस्था अलग से बनानी होगी।</div>
+ <h3>🏆 किसान Top 10 रैंकिंग</h3>
+ <p id="cloudStatus" class="muted" aria-live="polite">साझा रैंकिंग से जुड़ रहे हैं…</p>
+ <div class="btn-row"><button class="btn" type="button" onclick="loadLeaderboard('daily')">आज</button><button class="btn light" type="button" onclick="loadLeaderboard('weekly')">इस सप्ताह</button><button class="btn light" type="button" onclick="loadLeaderboard('monthly')">इस माह</button></div>
+ <div id="leaderboardList" class="tile" aria-live="polite">रैंकिंग लोड हो रही है…</div>
+ <p class="muted">सार्वजनिक सूची में केवल किसान का नाम, गाँव और अंक दिखेंगे। मोबाइल नंबर और खेत का क्षेत्रफल साझा नहीं होगा। इंटरनेट आवश्यक है।</p>
 </section>
 
 <section class="section" id="profile">
@@ -175,8 +179,63 @@ body:not([data-screen="home"]) .hero{display:none}
  <a href="#news"><span>♧</span><span>सूचनाएँ</span></a>
  <a href="#profile"><span>♙</span><span>मेरा खाता</span></a>
 </nav>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/dist/umd/supabase.min.js"></script>
 <script>
 const byId=id=>document.getElementById(id);
+const VUV_SUPABASE_URL="https://efgxnvvmtipqfibhsbri.supabase.co";
+const VUV_SUPABASE_KEY="sb_publishable_PiQPCSFpHt3-5d4n9n2o2A_yy2v7oRp";
+let vuvCloud=null;
+let vuvCloudReady=false;
+async function initVuvCloud(){
+ try{
+  if(!window.supabase?.createClient)throw new Error("library");
+  vuvCloud=window.supabase.createClient(VUV_SUPABASE_URL,VUV_SUPABASE_KEY);
+  let sessionResult=await vuvCloud.auth.getSession();
+  let session=sessionResult.data.session;
+  if(!session){
+   const signed=await vuvCloud.auth.signInAnonymously();
+   if(signed.error)throw signed.error;
+   session=signed.data.session;
+  }
+  if(!session?.access_token)throw new Error("session");
+  vuvCloudReady=true;
+  byId("cloudStatus").textContent="साझा किसान रैंकिंग से कनेक्शन सक्रिय है।";
+  await loadLeaderboard("daily");
+ }catch(e){
+  vuvCloudReady=false;
+  const status=byId("cloudStatus");
+  if(status)status.textContent="साझा रैंकिंग अभी शुरू नहीं हुई। इंटरनेट जाँचें; यदि समस्या रहे तो Supabase में Anonymous Sign-Ins चालू करना होगा।";
+  const list=byId("leaderboardList");if(list)list.textContent="रैंकिंग फिलहाल उपलब्ध नहीं है।";
+ }
+}
+async function submitVuvQuizAnswer(questionId,selectedIndex){
+ if(!vuvCloudReady||!vuvCloud)return null;
+ const profile=JSON.parse(localStorage.getItem("vuvFarmer")||"null");
+ if(!profile?.name?.trim()||!profile?.village?.trim())return null;
+ const result=await vuvCloud.functions.invoke("vuv-quiz-submit",{body:{
+  question_id:questionId,selected_option_index:selectedIndex,
+  display_name:profile.name.trim(),village:profile.village.trim()
+ }});
+ if(result.error)throw result.error;
+ return result.data;
+}
+async function loadLeaderboard(period){
+ const list=byId("leaderboardList");if(!list)return;
+ if(!vuvCloudReady||!vuvCloud){list.textContent="साझा रैंकिंग से कनेक्शन उपलब्ध नहीं है।";return;}
+ const view=period==="weekly"?"vuv_leaderboard_weekly":period==="monthly"?"vuv_leaderboard_monthly":"vuv_leaderboard_daily";
+ list.textContent="रैंकिंग लोड हो रही है…";
+ const result=await vuvCloud.from(view).select("display_name,village,points").order("points",{ascending:false}).limit(10);
+ if(result.error){list.textContent="रैंकिंग अभी लोड नहीं हो पाई।";return;}
+ list.replaceChildren();
+ if(!result.data?.length){list.textContent="अभी कोई अंक दर्ज नहीं हैं। क्विज़ हल करके पहली रैंकिंग शुरू करें।";return;}
+ result.data.forEach((item,index)=>{
+  const row=document.createElement("div");row.style.cssText="display:flex;justify-content:space-between;gap:10px;padding:8px 2px;border-bottom:1px solid #dfe9e0";
+  const who=document.createElement("span");who.textContent=(index+1)+". "+item.display_name+" · "+item.village;
+  const points=document.createElement("b");points.textContent=String(item.points)+" अंक";
+  row.append(who,points);list.appendChild(row);
+ });
+}
+
 const weatherText={0:"साफ आसमान",1:"मुख्यतः साफ",2:"आंशिक बादल",3:"बादल",45:"कोहरा",48:"घना कोहरा",51:"हल्की बूंदाबांदी",53:"बूंदाबांदी",55:"तेज बूंदाबांदी",61:"हल्की बारिश",63:"मध्यम बारिश",65:"तेज बारिश",80:"हल्की बौछार",81:"मध्यम बौछार",82:"तेज बौछार",95:"गरज-चमक के साथ बारिश",96:"ओलों के साथ गरज-चमक",99:"तेज ओलों के साथ गरज-चमक"};
 const weatherLabel=code=>weatherText[code]||"स्थिति उपलब्ध नहीं";
 const dayHindi=iso=>new Date(iso+"T12:00:00").toLocaleDateString("hi-IN",{weekday:"short",day:"numeric",month:"short"});
@@ -280,7 +339,7 @@ function renderQuiz(){
   const optionOrder=sourceQuestion.o.map((_,i)=>i);
   let optionSeed=0;for(const ch of getLocalDateKey()+"-"+todayQuestionOrder[dailyQuizCount])optionSeed=((optionSeed*31)+ch.charCodeAt(0))>>>0;
   for(let i=optionOrder.length-1;i>0;i--){optionSeed=(optionSeed*1664525+1013904223)>>>0;const j=optionSeed%(i+1);[optionOrder[i],optionOrder[j]]=[optionOrder[j],optionOrder[i]];}
-  currentQuestion={...sourceQuestion,o:optionOrder.map(i=>sourceQuestion.o[i]),a:optionOrder.indexOf(sourceQuestion.a)};
+  currentQuestion={...sourceQuestion,o:optionOrder.map(i=>sourceQuestion.o[i]),a:optionOrder.indexOf(sourceQuestion.a),sourceIndex:todayQuestionOrder[dailyQuizCount],optionOrder};
  }
  byId("question").textContent=dailyQuizCount>=DAILY_QUESTION_LIMIT?"आज के सभी 30 प्रश्न पूरे हो गए! कल फिर नए प्रश्न मिलेंगे।":currentQuestion.q;
  const progress=byId("quizProgress");if(progress)progress.textContent="आज के प्रश्न: "+dailyQuizCount+"/"+DAILY_QUESTION_LIMIT+" पूरे";
@@ -288,24 +347,46 @@ function renderQuiz(){
  if(dailyQuizCount<DAILY_QUESTION_LIMIT){currentQuestion.o.forEach((opt,i)=>{const b=document.createElement("button");b.className="quiz-option";b.textContent=opt;b.addEventListener("click",()=>answerQuiz(i));box.appendChild(b)});}
  updateScore();
 }
-function answerQuiz(i){
+async function answerQuiz(i){
  refreshDailyQuizState();
  if(dailyQuizCount>=DAILY_QUESTION_LIMIT||!currentQuestion)return;
  const buttons=byId("options").querySelectorAll("button");buttons.forEach(b=>b.disabled=true);
+ let cloudResult=null,cloudError=null;
+ try{cloudResult=await submitVuvQuizAnswer(currentQuestion.sourceIndex,currentQuestion.optionOrder[i]);}
+ catch(e){cloudError=e;}
+ if(cloudResult&&cloudResult.limit_reached){
+  dailyQuizCount=Number(cloudResult.daily_attempts||DAILY_QUESTION_LIMIT);
+  try{localStorage.setItem("vuvQuizDailyCount",String(Math.min(dailyQuizCount,DAILY_QUESTION_LIMIT)));}catch(e){}
+  byId("quizMsg").textContent="आज के 30 प्रश्न पूरे हो गए। कल फिर प्रयास करें।";
+  renderQuiz();return;
+ }
+ if(cloudResult&&cloudResult.already_answered){
+  dailyQuizCount=Math.min(Number(cloudResult.daily_attempts||dailyQuizCount+1),DAILY_QUESTION_LIMIT);
+  try{localStorage.setItem("vuvQuizDailyCount",String(dailyQuizCount));}catch(e){}
+  byId("quizMsg").textContent="यह प्रश्न पहले दर्ज हो चुका है। आपकी साझा रैंकिंग सुरक्षित है।";
+  renderQuiz();return;
+ }
+ if(cloudResult&&!cloudResult.accepted){
+  byId("quizMsg").textContent="उत्तर सर्वर पर दर्ज नहीं हुआ। कृपया फिर प्रयास करें।";
+  renderQuiz();return;
+ }
  let oldScore=null,oldAnswered=null,oldCount=null,oldHistory=null,captured=false;
  try{
   oldScore=localStorage.getItem("vuvScore");oldAnswered=localStorage.getItem("vuvAnswered");oldCount=localStorage.getItem("vuvQuizDailyCount");oldHistory=localStorage.getItem("vuvQuizHistory");captured=true;
   let score=Number(oldScore||0),answered=Number(oldAnswered||0);
   if(!Number.isFinite(score)||score<0)score=0;if(!Number.isFinite(answered)||answered<0)answered=0;
-  const correct=i===currentQuestion.a;
+  const correct=cloudResult?Boolean(cloudResult.correct):i===currentQuestion.a;
   if(correct)score+=10;
   localStorage.setItem("vuvScore",String(score));localStorage.setItem("vuvAnswered",String(answered+1));
-  localStorage.setItem("vuvQuizDailyCount",String(dailyQuizCount+1));dailyQuizCount+=1;
+  const nextCount=cloudResult?Number(cloudResult.daily_attempts||dailyQuizCount+1):dailyQuizCount+1;
+  localStorage.setItem("vuvQuizDailyCount",String(Math.min(nextCount,DAILY_QUESTION_LIMIT)));dailyQuizCount=Math.min(nextCount,DAILY_QUESTION_LIMIT);
   const history=JSON.parse(oldHistory||"{}"),day=getLocalDateKey(),record=history[day]||{attempts:0,correct:0,points:0};
   record.attempts+=1;if(correct){record.correct+=1;record.points+=10;}history[day]=record;
   const historyDays=Object.keys(history).sort();while(historyDays.length>400){delete history[historyDays.shift()];}
   localStorage.setItem("vuvQuizHistory",JSON.stringify(history));
   byId("quizMsg").textContent=correct?"सही जवाब! आपको 10 अंक मिले।":"सही उत्तर: "+currentQuestion.o[currentQuestion.a];
+  if(cloudResult){byId("cloudStatus").textContent="आपका उत्तर साझा रैंकिंग में सुरक्षित हो गया।";loadLeaderboard("daily");}
+  else if(cloudError){byId("cloudStatus").textContent="इंटरनेट/सर्वर से जुड़ाव नहीं हुआ; यह अंक केवल इसी फोन में सुरक्षित हुआ।";}
  }catch(e){
   if(captured)try{if(oldScore===null)localStorage.removeItem("vuvScore");else localStorage.setItem("vuvScore",oldScore);if(oldAnswered===null)localStorage.removeItem("vuvAnswered");else localStorage.setItem("vuvAnswered",oldAnswered);if(oldCount===null)localStorage.removeItem("vuvQuizDailyCount");else localStorage.setItem("vuvQuizDailyCount",oldCount);if(oldHistory===null)localStorage.removeItem("vuvQuizHistory");else localStorage.setItem("vuvQuizHistory",oldHistory);}catch(rollbackError){}
   byId("quizMsg").textContent="फोन में अंक सुरक्षित नहीं हो पाए। जगह खाली करके फिर कोशिश करें।";
@@ -390,7 +471,7 @@ document.querySelectorAll(".service").forEach(a=>a.addEventListener("click",e=>{
 document.querySelectorAll(".bottomnav a").forEach((a,i)=>a.addEventListener("click",e=>{e.preventDefault();showScreen(["services","news","profile"][i]);}));
 if(!history.state?.screen)history.replaceState({screen:"home"},"","#home");
 document.body.dataset.screen=history.state?.screen||"home";
-renderQuiz();loadFarmer();loadWeather();
+renderQuiz();loadFarmer();loadWeather();initVuvCloud();
 </script>
 <script src="back-handler.js"></script>
 </body>
