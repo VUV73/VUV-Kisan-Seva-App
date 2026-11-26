@@ -7,7 +7,7 @@ const navMatch = html.match(/<nav class="bottomnav"[^>]*>([\s\S]*?)<\/nav>/i);
 assert.ok(navMatch, "Bottom navigation must exist");
 const navLinks = [...navMatch[1].matchAll(/<a\b[^>]*>([\s\S]*?)<\/a>/gi)];
 assert.equal(navLinks.length, 3, "Bottom navigation must have exactly three items");
-const labels = navLinks.map(([, body]) => [...body.matchAll(/<span\\b[^>]*>([\\s\\S]*?)<\\/span>/gi)].at(-1)?.[1].trim() ?? "");
+const labels = navLinks.map(([, body]) => [...body.matchAll(/<span[^>]*>(.*?)<[/]span>/gis)].at(-1)?.[1].trim() ?? "");
 assert.deepEqual(labels, ["सभी सेवाएँ", "सूचनाएँ", "मेरा खाता"], "Navigation labels/order must remain fixed");
 
 const heroMatch = html.match(/<div class="hero"[\s\S]*?<img\b([^>]*)>/i);
