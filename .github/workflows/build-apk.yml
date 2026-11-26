@@ -100,20 +100,28 @@ jobs:
           python -m pip install pillow
           python make-icons.py
 
+      - name: Setup Gradle cache
+        uses: gradle/actions/setup-gradle@v4
+
       - name: Build APK
         run: |
           cd android
           chmod +x gradlew
 
-          # Gradle wrapper defaults to a 10-second download timeout.
-          # Increase it to 2 minutes to handle slower download connections.
+          # Use the smaller binary distribution and allow slower networks.
+          sed -i 's/-all\\.zip/-bin.zip/' gradle/wrapper/gradle-wrapper.properties
           if grep -q '^networkTimeout=' gradle/wrapper/gradle-wrapper.properties; then
             sed -i 's/^networkTimeout=.*/networkTimeout=120000/' gradle/wrapper/gradle-wrapper.properties
           else
             echo 'networkTimeout=120000' >> gradle/wrapper/gradle-wrapper.properties
           fi
 
-          ./gradlew --no-daemon assembleDebug
+          for attempt in 1 2 3; do
+            ./gradlew --no-daemon assembleDebug && exit 0
+            echo "Gradle build attempt ${attempt} failed; retrying..."
+            sleep 10
+          done
+          exit 1
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
