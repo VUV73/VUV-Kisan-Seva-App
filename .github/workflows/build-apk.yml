@@ -98,31 +98,78 @@ jobs:
           python -m pip install pillow
           python make-icons.py
 
+      - name: Configure permanent APK signing
+        working-directory: android
+        env:
+          VUV_KEYSTORE_BASE64: ${{ secrets.VUV_KEYSTORE_BASE64 }}
+          VUV_KEYSTORE_PASSWORD: ${{ secrets.VUV_KEYSTORE_PASSWORD }}
+          VUV_KEY_ALIAS: ${{ secrets.VUV_KEY_ALIAS }}
+          VUV_KEY_PASSWORD: ${{ secrets.VUV_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          for name in VUV_KEYSTORE_BASE64 VUV_KEYSTORE_PASSWORD VUV_KEY_ALIAS VUV_KEY_PASSWORD; do
+            if [ -z "${!name:-}" ]; then
+              echo "::error::Missing GitHub Actions secret: ${name}. Add all four VUV signing secrets before building an update APK."
+              exit 1
+            fi
+          done
+          printf '%s' "$VUV_KEYSTORE_BASE64" | base64 --decode > app/vuv-release.keystore
+          test -s app/vuv-release.keystore
+          chmod 600 app/vuv-release.keystore
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          path = Path("app/build.gradle")
+          text = path.read_text()
+          if "signingConfigs {" not in text:
+              text, count = re.subn(
+                  r"(    buildTypes\\s*\\{)",
+                  '''    signingConfigs {
+                  release {
+                      storeFile file("vuv-release.keystore")
+                      storePassword System.getenv("VUV_KEYSTORE_PASSWORD")
+                      keyAlias System.getenv("VUV_KEY_ALIAS")
+                      keyPassword System.getenv("VUV_KEY_PASSWORD")
+                  }
+              }
+
+              \\1''',
+                  text, count=1
+              )
+              if count != 1:
+                  raise SystemExit("Could not locate Android buildTypes block")
+          text, count = re.subn(
+              r"(buildTypes\\s*\\{\\s*release\\s*\\{)",
+              r"\\1\\n            signingConfig signingConfigs.release",
+              text, count=1
+          )
+          if count != 1:
+              raise SystemExit("Could not configure release signing")
+          path.write_text(text)
+          PY
+
       - name: Setup Gradle cache
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build APK
+      - name: Build signed APK
         run: |
           cd android
           chmod +x gradlew
-
-          # Use the smaller binary distribution and allow slower networks.
           sed -i 's/-all\\.zip/-bin.zip/' gradle/wrapper/gradle-wrapper.properties
           if grep -q '^networkTimeout=' gradle/wrapper/gradle-wrapper.properties; then
             sed -i 's/^networkTimeout=.*/networkTimeout=120000/' gradle/wrapper/gradle-wrapper.properties
           else
             echo 'networkTimeout=120000' >> gradle/wrapper/gradle-wrapper.properties
           fi
-
           for attempt in 1 2 3; do
-            ./gradlew --no-daemon assembleDebug && exit 0
+            ./gradlew --no-daemon assembleRelease && exit 0
             echo "Gradle build attempt ${attempt} failed; retrying..."
             sleep 10
           done
           exit 1
 
-      - name: Upload APK
+      - name: Upload signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: VUV-Kisan-Seva-APK
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: VUV-Kisan-Seva-Signed-APK
+          path: android/app/build/outputs/apk/release/app-release.apk
