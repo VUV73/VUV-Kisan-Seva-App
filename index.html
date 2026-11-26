@@ -303,6 +303,7 @@ function answerQuiz(i){
   localStorage.setItem("vuvQuizDailyCount",String(dailyQuizCount+1));dailyQuizCount+=1;
   const history=JSON.parse(oldHistory||"{}"),day=getLocalDateKey(),record=history[day]||{attempts:0,correct:0,points:0};
   record.attempts+=1;if(correct){record.correct+=1;record.points+=10;}history[day]=record;
+  const historyDays=Object.keys(history).sort();while(historyDays.length>400){delete history[historyDays.shift()];}
   localStorage.setItem("vuvQuizHistory",JSON.stringify(history));
   byId("quizMsg").textContent=correct?"सही जवाब! आपको 10 अंक मिले।":"सही उत्तर: "+currentQuestion.o[currentQuestion.a];
  }catch(e){
@@ -347,6 +348,7 @@ function importBackup(event){
    ["vuvScore","vuvAnswered"].forEach(k=>{if(incoming[k]!==undefined&&(!/^\d+$/.test(incoming[k])||Number(incoming[k])>100000000))throw new Error("invalid");});
    if(incoming.vuvQuizDailyCount!==undefined&&(!/^\d+$/.test(incoming.vuvQuizDailyCount)||Number(incoming.vuvQuizDailyCount)>DAILY_QUESTION_LIMIT))throw new Error("invalid");
    if(incoming.vuvQuizProgressDate!==undefined&&!/^\d{4}-\d{2}-\d{2}$/.test(incoming.vuvQuizProgressDate))throw new Error("invalid");
+   if(incoming.vuvQuizHistory!==undefined){const h=JSON.parse(incoming.vuvQuizHistory);if(!h||typeof h!=="object"||Array.isArray(h)||Object.keys(h).length>400)throw new Error("invalid");for(const [day,r] of Object.entries(h)){if(!/^\d{4}-\d{2}-\d{2}$/.test(day)||!r||!Number.isInteger(r.attempts)||!Number.isInteger(r.correct)||!Number.isInteger(r.points)||r.attempts<0||r.correct<0||r.points<0||r.correct>r.attempts||r.points!==r.correct*10)throw new Error("invalid");}}
    if(!confirm("बैकअप की जानकारी इस फोन की मौजूदा प्रोफाइल और क्विज़ के अंकों की जगह लेगी। क्या आप आगे बढ़ना चाहते हैं?")){msg.textContent="बैकअप वापस लाना रद्द किया गया।";return;}
    const previous={};VUV_BACKUP_KEYS.forEach(k=>previous[k]=localStorage.getItem(k));
    try{VUV_BACKUP_KEYS.forEach(k=>{if(Object.prototype.hasOwnProperty.call(incoming,k))localStorage.setItem(k,incoming[k]);else localStorage.removeItem(k);});}
