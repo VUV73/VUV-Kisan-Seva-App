@@ -130,4 +130,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: VUV-Kisan-Seva-APK
-          path: android/dist/VUV-Kisan-Seva.apk
+          path: dist/VUV-Kisan-Seva.apk
