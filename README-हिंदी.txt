@@ -20,8 +20,8 @@
 - सार्वजनिक Top 10 views केवल नाम, गाँव और अंक दिखाते हैं; daily, weekly और monthly रैंकिंग अलग हैं।
 - `vuv-quiz-submit` Edge Function सक्रिय है। सर्वर उत्तर की जाँच करता है, प्रति दिन अधिकतम 30 प्रश्न और हर प्रश्न का एक ही प्रयास लागू करता है। क्लाइंट सीधे अंक लिख नहीं सकता।
 - RLS और Security Advisor जाँच पूरी: अभी कोई security lint नहीं मिला।
-- **एक जरूरी सेटिंग:** Supabase Dashboard → Authentication → Sign In / Providers → Anonymous Sign-Ins को ON करके Save करें। इससे किसान बिना मोबाइल नंबर और OTP के सुरक्षित device-session बना पाएँगे। [यहाँ सीधे Auth Providers खोलें](https://supabase.com/dashboard/project/efgxnvvmtipqfibhsbri/auth/providers)।
-- इसके बाद नया APK build करके फोन पर जाँचना बाकी है। पुराने APK के ऊपर install करने से पहले signing-key की समस्या और किसान डेटा का backup ध्यान में रखें।
+- Anonymous Sign-Ins चालू करने का निर्देश उपयोगकर्ता को दिया गया है और उपयोगकर्ता ने चालू कर देने की पुष्टि की है। अगली APK जाँच में वास्तविक anonymous session और quiz submission सत्यापित करना बाकी है। [Auth Providers खोलें](https://supabase.com/dashboard/project/efgxnvvmtipqfibhsbri/auth/providers)।
+- नया APK build/फोन पर परीक्षण बाकी है। पुराना APK update करने से पहले signing-key की समस्या और किसान डेटा का backup ध्यान में रखें। ऐप में बैकअप बनाएं/वापस लाएँ विकल्प मौजूद है; अनइंस्टॉल करने से पहले बैकअप फ़ाइल बनाकर सुरक्षित रखें।
 
 किसी भी database password या service-role key को repository, ऐप या ChatGPT में न रखें। ऐप में केवल publishable key है; यह public client key है और सभी writes server-side function से नियंत्रित हैं।
 ### पुराने APK पर सुरक्षित अपडेट
