@@ -17,6 +17,9 @@ jobs:
       - name: Download repository
         uses: actions/checkout@v4
 
+      - name: Check app structure and safety rules
+        run: node scripts/check-app.mjs
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
