@@ -16,7 +16,7 @@ button,a,input,select{font:inherit}a{color:var(--green)}
 main{max-width:760px;margin:auto;padding:12px}.section{display:none;background:var(--white);border:1px solid var(--line);border-radius:17px;padding:15px;margin:13px 0;box-shadow:0 3px 12px #173a2108;scroll-margin-top:72px}.section.active{display:block}.section h2{font-size:18px;margin:0 0 11px;color:var(--green);display:flex;align-items:center;gap:8px}.section h3{font-size:15px;margin:13px 0 7px}.muted{color:var(--muted);font-size:12px;line-height:1.5}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.tile{background:#f0f7f1;border:1px solid #e1eee3;border-radius:13px;padding:11px}.tile b{display:block;font-size:13px}.tile p{margin:5px 0 0;font-size:12px;line-height:1.45}.service-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.service{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:91px;padding:10px 5px;background:#f4faf4;border:1px solid #dceade;border-radius:14px;text-decoration:none;color:var(--ink);font-size:12px;font-weight:700;gap:5px}.service .ico{width:37px;height:37px;border-radius:12px;display:grid;place-items:center;background:#dff1e1;font-size:21px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:10px;padding:10px 12px;background:var(--green);color:#fff;text-decoration:none;font-size:13px;font-weight:700;cursor:pointer}.btn.light{background:#e9f5eb;color:var(--green);border:1px solid #cfe4d2}.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.status{background:#eff8ef;border-radius:11px;padding:11px;font-size:13px;line-height:1.5}.notice{background:#fff8e6;border-left:4px solid #e5b83e;border-radius:9px;padding:10px;font-size:12px;line-height:1.5;margin-top:10px}.links a{display:block;padding:10px 1px;text-decoration:none;border-bottom:1px solid var(--line);font-size:13px;font-weight:600}.links a:last-child{border-bottom:0}
 .stat{font-size:22px;font-weight:800;color:var(--green);margin-top:3px}.forecast .tile{padding:9px}.forecast .tile p{font-size:11px}
 label{display:block;font-size:13px;font-weight:700;margin:8px 0 4px}input,select{width:100%;padding:10px;border:1px solid #cadbcc;border-radius:10px;background:#fff;color:var(--ink);font-size:14px}button:disabled{opacity:.55;cursor:not-allowed}.quiz-option{display:block;width:100%;text-align:left;margin:7px 0;background:#f2f8f2;color:var(--ink);border:1px solid #d9e8dc;border-radius:10px;padding:11px;font-size:13px}.quiz-option.correct{border-color:#218044;background:#e6f6e9}.quiz-option.wrong{border-color:#c55;background:#fff0f0}
-.bottomnav{position:fixed;bottom:0;left:0;right:0;z-index:20;background:#fff;border-top:1px solid #dbe8dd;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:6px 4px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -4px 15px #173a2110}.bottomnav a{display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:#627368;font-size:10px;font-weight:700;padding:4px 0;min-width:0}.bottomnav a span:first-child{font-size:19px;min-width:38px;min-height:32px;display:grid;place-items:center}.bottomnav a.active{color:var(--green)}.bottomnav a.active span:first-child{background:#e4f3e6;border:1px solid #cce4d0;border-radius:10px;padding:2px 12px}
+.bottomnav{position:fixed;bottom:0;left:0;right:0;z-index:20;background:#fff;border-top:1px solid #dbe8dd;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:6px 4px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -4px 15px #173a2110}.bottomnav a{display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:#627368;font-size:10px;font-weight:700;padding:4px 0;min-width:0}.bottomnav a span:first-child{font-size:19px;min-width:38px;min-height:32px;display:grid;place-items:center}.bottomnav a.active{color:var(--green)}.bottomnav a.active span:first-child{background:#e4f3e6;border:1px solid #cce4d0;border-radius:10px;padding:2px 12px}
 footer{text-align:center;padding:18px 10px;color:var(--muted);font-size:11px}
 @media(min-width:560px){.service-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.hero img{max-height:280px}}@media(max-width:370px){.service-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.brand h1{font-size:18px}}
 body:not([data-screen="home"]) .hero{display:none}
@@ -138,7 +138,9 @@ body:not([data-screen="home"]) .hero{display:none}
  <p class="muted">हर उत्तर के बाद अगला नया प्रश्न मिलेगा। सही उत्तर पर 10 अंक मिलेंगे। एक दिन में 30 प्रश्न हल कर सकते हैं।</p>
  <p id="quizProgress" class="muted" aria-live="polite">आज के प्रश्न: 0/30 पूरे</p><p id="question" style="font-weight:700"></p><div id="options"></div><p id="quizMsg" aria-live="polite"></p>
  <div class="grid"><div class="tile"><span class="muted">कुल अंक — इस फोन पर</span><div class="stat" id="score">0</div></div><div class="tile"><span class="muted">हल किए प्रश्न</span><div class="stat" id="answered">0</div></div></div>
- <div class="notice">आपके अंक इसी फोन में सुरक्षित रहते हैं। अभी साझा दैनिक / साप्ताहिक / मासिक Top 10 रैंकिंग उपलब्ध नहीं है; इसके लिए सुरक्षित सर्वर और डेटाबेस की जरूरत होगी।</div>
+ <h3>📊 आपकी प्रगति रिपोर्ट</h3>
+ <div class="grid"><div class="tile"><span class="muted">पिछले 7 दिन के अंक</span><div class="stat" id="weeklyPoints">0</div></div><div class="tile"><span class="muted">पिछले 30 दिन के अंक</span><div class="stat" id="monthlyPoints">0</div></div><div class="tile"><span class="muted">पिछले 7 दिन के प्रश्न</span><div class="stat" id="weeklyAttempts">0</div></div><div class="tile"><span class="muted">पिछले 30 दिन के प्रश्न</span><div class="stat" id="monthlyAttempts">0</div></div></div>
+ <div class="notice">यह आपकी इसी फोन पर सुरक्षित निजी प्रगति रिपोर्ट है। साझा Top 10 रैंकिंग के लिए सुरक्षित सर्वर और किसान पहचान व्यवस्था अलग से बनानी होगी।</div>
 </section>
 
 <section class="section" id="profile">
@@ -169,8 +171,7 @@ body:not([data-screen="home"]) .hero{display:none}
 </main>
 <footer>VUV किसान सेवा · विकास उर्वरक विक्रेता · बसखारी, अंबेडकर नगर</footer>
 <nav class="bottomnav" aria-label="मुख्य नेविगेशन">
- <a href="#home" class="active"><span>⌂</span><span>होम</span></a>
- <a href="#services"><span>▦</span><span>सभी सेवाएँ</span></a>
+ <a href="#services" class="active"><span>▦</span><span>सभी सेवाएँ</span></a>
  <a href="#news"><span>♧</span><span>सूचनाएँ</span></a>
  <a href="#profile"><span>♙</span><span>मेरा खाता</span></a>
 </nav>
@@ -291,24 +292,34 @@ function answerQuiz(i){
  refreshDailyQuizState();
  if(dailyQuizCount>=DAILY_QUESTION_LIMIT||!currentQuestion)return;
  const buttons=byId("options").querySelectorAll("button");buttons.forEach(b=>b.disabled=true);
- let oldScore=null,oldAnswered=null,oldCount=null,captured=false;
+ let oldScore=null,oldAnswered=null,oldCount=null,oldHistory=null,captured=false;
  try{
-  oldScore=localStorage.getItem("vuvScore");oldAnswered=localStorage.getItem("vuvAnswered");oldCount=localStorage.getItem("vuvQuizDailyCount");captured=true;
+  oldScore=localStorage.getItem("vuvScore");oldAnswered=localStorage.getItem("vuvAnswered");oldCount=localStorage.getItem("vuvQuizDailyCount");oldHistory=localStorage.getItem("vuvQuizHistory");captured=true;
   let score=Number(oldScore||0),answered=Number(oldAnswered||0);
   if(!Number.isFinite(score)||score<0)score=0;if(!Number.isFinite(answered)||answered<0)answered=0;
   const correct=i===currentQuestion.a;
   if(correct)score+=10;
   localStorage.setItem("vuvScore",String(score));localStorage.setItem("vuvAnswered",String(answered+1));
   localStorage.setItem("vuvQuizDailyCount",String(dailyQuizCount+1));dailyQuizCount+=1;
+  const history=JSON.parse(oldHistory||"{}"),day=getLocalDateKey(),record=history[day]||{attempts:0,correct:0,points:0};
+  record.attempts+=1;if(correct){record.correct+=1;record.points+=10;}history[day]=record;
+  localStorage.setItem("vuvQuizHistory",JSON.stringify(history));
   byId("quizMsg").textContent=correct?"सही जवाब! आपको 10 अंक मिले।":"सही उत्तर: "+currentQuestion.o[currentQuestion.a];
  }catch(e){
-  if(captured)try{if(oldScore===null)localStorage.removeItem("vuvScore");else localStorage.setItem("vuvScore",oldScore);if(oldAnswered===null)localStorage.removeItem("vuvAnswered");else localStorage.setItem("vuvAnswered",oldAnswered);if(oldCount===null)localStorage.removeItem("vuvQuizDailyCount");else localStorage.setItem("vuvQuizDailyCount",oldCount);}catch(rollbackError){}
+  if(captured)try{if(oldScore===null)localStorage.removeItem("vuvScore");else localStorage.setItem("vuvScore",oldScore);if(oldAnswered===null)localStorage.removeItem("vuvAnswered");else localStorage.setItem("vuvAnswered",oldAnswered);if(oldCount===null)localStorage.removeItem("vuvQuizDailyCount");else localStorage.setItem("vuvQuizDailyCount",oldCount);if(oldHistory===null)localStorage.removeItem("vuvQuizHistory");else localStorage.setItem("vuvQuizHistory",oldHistory);}catch(rollbackError){}
   byId("quizMsg").textContent="फोन में अंक सुरक्षित नहीं हो पाए। जगह खाली करके फिर कोशिश करें।";
  }
  renderQuiz();
 }
-function updateScore(){try{byId("score").textContent=localStorage.getItem("vuvScore")||"0";byId("answered").textContent=localStorage.getItem("vuvAnswered")||"0"}catch(e){}}
-const VUV_BACKUP_KEYS=["vuvFarmer","vuvScore","vuvAnswered","vuvQuizProgressDate","vuvQuizDailyCount"];
+function updateScore(){
+ try{
+  byId("score").textContent=localStorage.getItem("vuvScore")||"0";byId("answered").textContent=localStorage.getItem("vuvAnswered")||"0";
+  const history=JSON.parse(localStorage.getItem("vuvQuizHistory")||"{}"),now=new Date();
+  const sum=(days,key)=>{let total=0;for(let i=0;i<days;i++){const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-i),k=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");total+=Number(history[k]?.[key]||0);}return total;};
+  byId("weeklyPoints").textContent=sum(7,"points");byId("monthlyPoints").textContent=sum(30,"points");byId("weeklyAttempts").textContent=sum(7,"attempts");byId("monthlyAttempts").textContent=sum(30,"attempts");
+ }catch(e){}
+}
+const VUV_BACKUP_KEYS=["vuvFarmer","vuvScore","vuvAnswered","vuvQuizProgressDate","vuvQuizDailyCount","vuvQuizHistory"];
 function exportBackup(){
  try{
   const data={app:"VUV Kisan Seva",version:1,createdAt:new Date().toISOString(),data:{}};
@@ -357,7 +368,7 @@ function clearFarmer(){if(!confirm("क्या आप इस फोन से 
 function loadFarmer(){try{const p=JSON.parse(localStorage.getItem("vuvFarmer")||"null");byId("farmerPhotoPreview").src="";selectedFarmerPhoto="";if(p){byId("farmerName").value=p.name||"";byId("farmerVillage").value=p.village||"";byId("farmerArea").value=p.area||"";byId("farmerUnit").value=p.unit||"बीघा";selectedFarmerPhoto=p.photo||"";if(selectedFarmerPhoto)byId("farmerPhotoPreview").src=selectedFarmerPhoto}}catch(e){}}
 byId("farmerPhoto").addEventListener("change",e=>{const file=e.target.files?.[0];if(!file)return;if(!file.type.startsWith("image/")){byId("profileMsg").textContent="कृपया फोटो फ़ाइल चुनें।";return;}const reader=new FileReader();reader.onload=()=>{const img=new Image();img.onload=()=>{const canvas=document.createElement("canvas"),max=420,scale=Math.min(1,max/Math.max(img.width,img.height));canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);selectedFarmerPhoto=canvas.toDataURL("image/jpeg",0.72);byId("farmerPhotoPreview").src=selectedFarmerPhoto;byId("profileMsg").textContent="फोटो चुन ली गई है। अब जानकारी सुरक्षित करें।"};img.src=reader.result};reader.readAsDataURL(file);});
 function setActiveNav(id){
- const target=id==="profile"?3:id==="news"?2:id==="services"?1:0;
+ const target=id==="profile"?2:id==="news"?1:0;
  document.querySelectorAll(".bottomnav a").forEach((a,i)=>a.classList.toggle("active",i===target));
 }
 function showScreen(id,push=true){
@@ -374,7 +385,7 @@ function showScreen(id,push=true){
 window.addEventListener("popstate",e=>showScreen(e.state?.screen||"home",false));
 // Service cards and navigation links open one page at a time.
 document.querySelectorAll(".service").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();showScreen(a.getAttribute("href").slice(1));}));
-document.querySelectorAll(".bottomnav a").forEach((a,i)=>a.addEventListener("click",e=>{e.preventDefault();showScreen(["home","services","news","profile"][i]);}));
+document.querySelectorAll(".bottomnav a").forEach((a,i)=>a.addEventListener("click",e=>{e.preventDefault();showScreen(["services","news","profile"][i]);}));
 if(!history.state?.screen)history.replaceState({screen:"home"},"","#home");
 document.body.dataset.screen=history.state?.screen||"home";
 renderQuiz();loadFarmer();loadWeather();
