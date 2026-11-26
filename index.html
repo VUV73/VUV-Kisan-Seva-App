@@ -136,7 +136,7 @@ body:not([data-screen="home"]) .hero{display:none}
 <section class="section" id="quiz">
  <h2>🧠 किसान ज्ञान क्विज़</h2>
  <p class="muted">हर उत्तर के बाद अगला नया प्रश्न मिलेगा। सही उत्तर पर 10 अंक मिलेंगे। एक दिन में 30 प्रश्न हल कर सकते हैं।</p>
- <p id="question" style="font-weight:700"></p><div id="options"></div><p id="quizMsg" aria-live="polite"></p>
+ <p id="quizProgress" class="muted" aria-live="polite">आज के प्रश्न: 0/30 पूरे</p><p id="question" style="font-weight:700"></p><div id="options"></div><p id="quizMsg" aria-live="polite"></p>
  <div class="grid"><div class="tile"><span class="muted">कुल अंक — इस फोन पर</span><div class="stat" id="score">0</div></div><div class="tile"><span class="muted">हल किए प्रश्न</span><div class="stat" id="answered">0</div></div></div>
  <div class="notice">आपके अंक इसी फोन में सुरक्षित रहते हैं। अभी साझा दैनिक / साप्ताहिक / मासिक Top 10 रैंकिंग उपलब्ध नहीं है; इसके लिए सुरक्षित सर्वर और डेटाबेस की जरूरत होगी।</div>
 </section>
@@ -272,8 +272,16 @@ function refreshDailyQuizState(){
 refreshDailyQuizState();
 function renderQuiz(){
  refreshDailyQuizState();
- currentQuestion=dailyQuizCount<DAILY_QUESTION_LIMIT?questions[todayQuestionOrder[dailyQuizCount]]:null;
+ const sourceQuestion=dailyQuizCount<DAILY_QUESTION_LIMIT?questions[todayQuestionOrder[dailyQuizCount]]:null;
+ currentQuestion=null;
+ if(sourceQuestion){
+  const optionOrder=sourceQuestion.o.map((_,i)=>i);
+  let optionSeed=0;for(const ch of getLocalDateKey()+"-"+todayQuestionOrder[dailyQuizCount])optionSeed=((optionSeed*31)+ch.charCodeAt(0))>>>0;
+  for(let i=optionOrder.length-1;i>0;i--){optionSeed=(optionSeed*1664525+1013904223)>>>0;const j=optionSeed%(i+1);[optionOrder[i],optionOrder[j]]=[optionOrder[j],optionOrder[i]];}
+  currentQuestion={...sourceQuestion,o:optionOrder.map(i=>sourceQuestion.o[i]),a:optionOrder.indexOf(sourceQuestion.a)};
+ }
  byId("question").textContent=dailyQuizCount>=DAILY_QUESTION_LIMIT?"आज के सभी 30 प्रश्न पूरे हो गए! कल फिर नए प्रश्न मिलेंगे।":currentQuestion.q;
+ const progress=byId("quizProgress");if(progress)progress.textContent="आज के प्रश्न: "+dailyQuizCount+"/"+DAILY_QUESTION_LIMIT+" पूरे";
  const box=byId("options");box.innerHTML="";
  if(dailyQuizCount<DAILY_QUESTION_LIMIT){currentQuestion.o.forEach((opt,i)=>{const b=document.createElement("button");b.className="quiz-option";b.textContent=opt;b.addEventListener("click",()=>answerQuiz(i));box.appendChild(b)});}
  updateScore();
