@@ -30,11 +30,11 @@ jobs:
           from pathlib import Path
           import re
           html = Path("index.html").read_text(encoding="utf-8")
-          scripts = re.findall(r"<script(?:\\s[^>]*)?>([\\s\\S]*?)</script>", html, re.I)
+          scripts = re.findall(r"<script(?:\s[^>]*)?>([\s\S]*?)</script>", html, re.I)
           inline = [s for s in scripts if s.strip()]
           if not inline:
               raise SystemExit("No inline JavaScript found")
-          Path("/tmp/vuv-inline.js").write_text("\\n;".join(inline), encoding="utf-8")
+          Path("/tmp/vuv-inline.js").write_text("\n;".join(inline), encoding="utf-8")
           PY
           node --check /tmp/vuv-inline.js
           node --check back-handler.js
