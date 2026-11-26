@@ -1,10 +1,8 @@
 name: Build VUV Kisan Seva APK
 
 on:
+  # APK builds are manual until permanent signing is configured.
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 # Least-privilege permission: this workflow only needs to read repository files.
 permissions:
