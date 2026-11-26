@@ -106,10 +106,10 @@ jobs:
                   }
               }
           """
-          s, n = re.subn(r"(android\\s*\\{)", r"\\1" + signing, s, count=1)
+          s, n = re.subn(r"(android\s*\{)", r"\1" + signing, s, count=1)
           if n != 1:
               raise SystemExit("Could not locate Android Gradle configuration")
-          s, n = re.subn(r"(buildTypes\\s*\\{\\s*release\\s*\\{)", r"\\1\\n            signingConfig signingConfigs.vuvRelease", s, count=1)
+          s, n = re.subn(r"(buildTypes\s*\{\s*release\s*\{)", r"\1\n            signingConfig signingConfigs.vuvRelease", s, count=1)
           if n != 1:
               raise SystemExit("Could not locate release build type")
           p.write_text(s)
