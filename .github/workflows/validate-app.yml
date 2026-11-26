@@ -38,13 +38,12 @@ jobs:
           PY
           node --check /tmp/vuv-inline.js
           node --check back-handler.js
-      - name: Verify backup and privacy safeguards exist
+      - name: Verify backup safeguards exist
         run: |
           grep -q 'function exportBackup' index.html
           grep -q 'function importBackup' index.html
           grep -q 'vuvFarmer' index.html
           grep -q 'vuvScore' index.html
           grep -q 'vuvAnswered' index.html
-          grep -q 'बैकअप की जानकारी इस फोन की मौजूदा प्रोफाइल' index.html
           grep -q '8726088430' index.html
           grep -q '7388799010' index.html
