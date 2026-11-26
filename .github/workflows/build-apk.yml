@@ -122,9 +122,7 @@ jobs:
           path = Path("app/build.gradle")
           text = path.read_text()
           if "signingConfigs {" not in text:
-              text, count = re.subn(
-                  r"(    buildTypes\s*\{)",
-                  '''    signingConfigs {
+              signing_block = """    signingConfigs {
                   release {
                       storeFile file("vuv-release.keystore")
                       storePassword System.getenv("VUV_KEYSTORE_PASSWORD")
@@ -133,7 +131,10 @@ jobs:
                   }
               }
 
-              \1''',
+              """
+              text, count = re.subn(
+                  r"(    buildTypes\s*\{)",
+                  lambda match: signing_block + match.group(1),
                   text, count=1
               )
               if count != 1:
