@@ -23,17 +23,16 @@ const questionBank = html.slice(questionsStart, questionsEnd + 2);
 assert.equal((questionBank.match(/\{q:/g) || []).length, 60, "Quiz bank must contain exactly 60 questions");
 assert.match(html, /DAILY_QUESTION_LIMIT=30/, "Daily quiz limit must remain 30");
 const edgeFunction = readFileSync("supabase/functions/vuv-quiz-submit/index.ts", "utf8");
-const clientAnswers = [...questionBank.matchAll(/\\ba:(\\d+)\\}/g)].map(([, answer]) => Number(answer));
-const answerKeyMatch = edgeFunction.match(/const answerKey = \\[([\\s\\S]*?)\\];/);
+const clientAnswers = [...questionBank.matchAll(/\ba:(\d+)\}/g)].map(([, answer]) => Number(answer));
+const answerKeyMatch = edgeFunction.match(/const answerKey = \[([\s\S]*?)\];/);
 assert.ok(answerKeyMatch, "Secure server quiz answer key must exist");
 const serverAnswers = answerKeyMatch[1].split(",").map(value => value.trim()).filter(Boolean).map(Number);
 assert.deepEqual(serverAnswers, clientAnswers, "Server quiz answer key must exactly match all client questions");
 
-
 for (const key of ["vuvFarmer", "vuvScore", "vuvAnswered", "vuvQuizProgressDate", "vuvQuizDailyCount", "vuvQuizHistory"]) {
-  assert.ok(html.includes(JSON.stringify(key)), \`Backup must include \${key}\`);
+  assert.ok(html.includes(JSON.stringify(key)), `Backup must include ${key}`);
 }
-for (const phone of ["8726088430", "7388799010"]) assert.ok(html.includes(phone), \`Contact \${phone} must remain\`);
+for (const phone of ["8726088430", "7388799010"]) assert.ok(html.includes(phone), `Contact ${phone} must remain`);
 assert.ok(html.includes("maps.app.goo.gl/f8Lxuis63DY5kjyr7"), "Shop map link must remain");
 
 const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)];
