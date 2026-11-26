@@ -123,7 +123,7 @@ jobs:
           text = path.read_text()
           if "signingConfigs {" not in text:
               text, count = re.subn(
-                  r"(    buildTypes\\s*\\{)",
+                  r"(    buildTypes\s*\{)",
                   '''    signingConfigs {
                   release {
                       storeFile file("vuv-release.keystore")
@@ -133,14 +133,14 @@ jobs:
                   }
               }
 
-              \\1''',
+              \1''',
                   text, count=1
               )
               if count != 1:
                   raise SystemExit("Could not locate Android buildTypes block")
           text, count = re.subn(
-              r"(buildTypes\\s*\\{\\s*release\\s*\\{)",
-              r"\\1\\n            signingConfig signingConfigs.release",
+              r"(buildTypes\s*\{\s*release\s*\{)",
+              r"\1\n            signingConfig signingConfigs.release",
               text, count=1
           )
           if count != 1:
