@@ -23,7 +23,7 @@ jobs:
           test -s back-handler.js
           test -s make-icons.py
           test -s app-icon-photo.png
-          test -s assets/vuv-logo.png
+          test -s vuv-logo.png
       - name: Check embedded JavaScript syntax
         run: |
           python3 - <<'PY'
