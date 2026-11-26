@@ -1,11 +1,8 @@
-name: Build VUV Kisan Seva APK
+name: Build VUV Kisan Seva Release APK
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
-# Least-privilege permission: this workflow only needs to read repository files.
 permissions:
   contents: read
 
@@ -13,18 +10,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-
     steps:
-      - name: Download repository
+      - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Validate app source
+        run: node scripts/check-app.mjs
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      - name: Check app structure and safety rules
-        run: node scripts/check-app.mjs
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -45,45 +41,22 @@ jobs:
       - name: Prepare app files
         run: |
           mkdir -p assets www
-
           if [ ! -f assets/vuv-logo.png ]; then
-            if [ -f vuv-logo.png ]; then
-              cp vuv-logo.png assets/vuv-logo.png
-            else
-              echo "ERROR: VUV logo file is missing"
-              exit 1
-            fi
+            test -f vuv-logo.png || { echo "VUV logo missing"; exit 1; }
+            cp vuv-logo.png assets/vuv-logo.png
           fi
-
-          if [ ! -f app-icon-photo.png ]; then
-            echo "ERROR: app-icon-photo.png is missing from the repository root"
-            exit 1
-          fi
-
-          if [ ! -f make-icons.py ]; then
-            echo "ERROR: make-icons.py is missing from the repository root"
-            exit 1
-          fi
-
-          if [ ! -f index.html ]; then
-            echo "ERROR: index.html is missing"
-            exit 1
-          fi
-
-          if [ ! -f back-handler.js ]; then
-            echo "ERROR: back-handler.js is missing"
-            exit 1
-          fi
-
+          test -f app-icon-photo.png || { echo "App icon photo missing"; exit 1; }
+          test -f make-icons.py || { echo "Icon generator missing"; exit 1; }
+          test -f index.html || { echo "index.html missing"; exit 1; }
+          test -f back-handler.js || { echo "Back handler missing"; exit 1; }
           cp index.html www/index.html
           mkdir -p www/assets
           cp -r assets/. www/assets/
 
-      - name: Bundle Android back button handler
-        run: |
-          npx esbuild back-handler.js --bundle --format=iife --outfile=www/back-handler.js
+      - name: Bundle Android back handler
+        run: npx esbuild back-handler.js --bundle --format=iife --outfile=www/back-handler.js
 
-      - name: Create Capacitor configuration
+      - name: Create Capacitor config
         run: |
           cat > capacitor.config.json <<'EOF'
           {
@@ -92,21 +65,62 @@ jobs:
             "webDir": "www"
           }
           EOF
-
-      - name: Add Android platform
-        run: |
           npx cap add android
 
-      - name: Generate launcher icons from supplied photo
+      - name: Generate launcher icons
         run: |
           python -m pip install pillow
           python make-icons.py
 
-      - name: Setup Gradle cache
+      - name: Configure persistent release signing
+        env:
+          VUV_KEYSTORE_BASE64: ${{ secrets.VUV_RELEASE_KEYSTORE_BASE64 }}
+          VUV_STORE_PASSWORD: ${{ secrets.VUV_RELEASE_STORE_PASSWORD }}
+          VUV_KEY_ALIAS: ${{ secrets.VUV_RELEASE_KEY_ALIAS }}
+          VUV_KEY_PASSWORD: ${{ secrets.VUV_RELEASE_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [ -z "$VUV_KEYSTORE_BASE64" ] || [ -z "$VUV_STORE_PASSWORD" ] || [ -z "$VUV_KEY_ALIAS" ] || [ -z "$VUV_KEY_PASSWORD" ]; then
+            echo "::error::Add repository Actions secrets: VUV_RELEASE_KEYSTORE_BASE64, VUV_RELEASE_STORE_PASSWORD, VUV_RELEASE_KEY_ALIAS, VUV_RELEASE_KEY_PASSWORD"
+            exit 1
+          fi
+          printf '%s' "$VUV_KEYSTORE_BASE64" | base64 --decode > android/app/vuv-release.jks
+          test -s android/app/vuv-release.jks
+          chmod 600 android/app/vuv-release.jks
+          export VUV_KEYSTORE_PATH="$GITHUB_WORKSPACE/android/app/vuv-release.jks"
+          export VUV_STORE_PASSWORD VUV_KEY_ALIAS VUV_KEY_PASSWORD
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path("android/app/build.gradle")
+          s = p.read_text()
+          if "signingConfigs.vuvRelease" in s:
+              raise SystemExit("Release signing already configured unexpectedly")
+          signing = """
+              signingConfigs {
+                  vuvRelease {
+                      storeFile file(System.getenv("VUV_KEYSTORE_PATH"))
+                      storePassword System.getenv("VUV_STORE_PASSWORD")
+                      keyAlias System.getenv("VUV_KEY_ALIAS")
+                      keyPassword System.getenv("VUV_KEY_PASSWORD")
+                  }
+              }
+          """
+          s, n = re.subn(r"(android\\s*\\{)", r"\\1" + signing, s, count=1)
+          if n != 1:
+              raise SystemExit("Could not locate Android Gradle configuration")
+          s, n = re.subn(r"(buildTypes\\s*\\{\\s*release\\s*\\{)", r"\\1\\n            signingConfig signingConfigs.vuvRelease", s, count=1)
+          if n != 1:
+              raise SystemExit("Could not locate release build type")
+          p.write_text(s)
+          PY
+
+      - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build debug APK (temporary signing)
+      - name: Build and verify signed release APK
         run: |
+          set -euo pipefail
           cd android
           chmod +x gradlew
           sed -i 's/-all\\.zip/-bin.zip/' gradle/wrapper/gradle-wrapper.properties
@@ -115,19 +129,16 @@ jobs:
           else
             echo 'networkTimeout=120000' >> gradle/wrapper/gradle-wrapper.properties
           fi
-          TASK=assembleDebug
-          APK=app/build/outputs/apk/debug/app-debug.apk
-          for attempt in 1 2 3; do
-            ./gradlew --no-daemon "$TASK" && break
-            echo "Gradle build attempt ${attempt} failed; retrying..."
-            sleep 10
-          done
+          ./gradlew --no-daemon assembleRelease
+          APK=app/build/outputs/apk/release/app-release.apk
           test -s "$APK"
+          "$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)/apksigner" verify --verbose --print-certs "$APK"
           mkdir -p ../dist
-          cp "$APK" ../dist/VUV-Kisan-Seva.apk
+          cp "$APK" ../dist/VUV-Kisan-Seva-Release.apk
 
-      - name: Upload APK
+      - name: Upload signed release APK
         uses: actions/upload-artifact@v4
         with:
-          name: VUV-Kisan-Seva-APK
-          path: dist/VUV-Kisan-Seva.apk
+          name: VUV-Kisan-Seva-Release-APK
+          path: dist/VUV-Kisan-Seva-Release.apk
+          if-no-files-found: error
