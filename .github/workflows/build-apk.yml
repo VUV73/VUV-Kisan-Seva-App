@@ -102,48 +102,10 @@ jobs:
           python -m pip install pillow
           python make-icons.py
 
-      - name: Configure release signing when secrets are available
-        if: ${{ secrets.VUV_KEYSTORE_BASE64 != '' && secrets.VUV_KEYSTORE_PASSWORD != '' && secrets.VUV_KEY_ALIAS != '' && secrets.VUV_KEY_PASSWORD != '' }}
-        working-directory: android
-        env:
-          VUV_KEYSTORE_BASE64: ${{ secrets.VUV_KEYSTORE_BASE64 }}
-          VUV_KEYSTORE_PASSWORD: ${{ secrets.VUV_KEYSTORE_PASSWORD }}
-          VUV_KEY_ALIAS: ${{ secrets.VUV_KEY_ALIAS }}
-          VUV_KEY_PASSWORD: ${{ secrets.VUV_KEY_PASSWORD }}
-        run: |
-          set -euo pipefail
-          printf '%s' "$VUV_KEYSTORE_BASE64" | base64 --decode > app/vuv-release.keystore
-          test -s app/vuv-release.keystore
-          chmod 600 app/vuv-release.keystore
-          python - <<'PY'
-          from pathlib import Path
-          import re
-          path = Path("app/build.gradle")
-          text = path.read_text()
-          if "signingConfigs {" not in text:
-              signing_block = """    signingConfigs {
-                  release {
-                      storeFile file("vuv-release.keystore")
-                      storePassword System.getenv("VUV_KEYSTORE_PASSWORD")
-                      keyAlias System.getenv("VUV_KEY_ALIAS")
-                      keyPassword System.getenv("VUV_KEY_PASSWORD")
-                  }
-              }
-
-              """
-              text, count = re.subn(r"(    buildTypes\\s*\\{)", lambda match: signing_block + match.group(1), text, count=1)
-              if count != 1:
-                  raise SystemExit("Could not locate Android buildTypes block")
-          text, count = re.subn(r"(buildTypes\\s*\\{\\s*release\\s*\\{)", r"\\1\\n            signingConfig signingConfigs.release", text, count=1)
-          if count != 1:
-              raise SystemExit("Could not configure release signing")
-          path.write_text(text)
-          PY
-
       - name: Setup Gradle cache
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build APK
+      - name: Build debug APK (temporary signing)
         run: |
           cd android
           chmod +x gradlew
@@ -153,13 +115,8 @@ jobs:
           else
             echo 'networkTimeout=120000' >> gradle/wrapper/gradle-wrapper.properties
           fi
-          if [ -f app/vuv-release.keystore ]; then
-            TASK=assembleRelease
-            APK=app/build/outputs/apk/release/app-release.apk
-          else
-            TASK=assembleDebug
-            APK=app/build/outputs/apk/debug/app-debug.apk
-          fi
+          TASK=assembleDebug
+          APK=app/build/outputs/apk/debug/app-debug.apk
           for attempt in 1 2 3; do
             ./gradlew --no-daemon "$TASK" && break
             echo "Gradle build attempt ${attempt} failed; retrying..."
