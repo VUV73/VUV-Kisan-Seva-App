@@ -282,8 +282,9 @@ function answerQuiz(i){
  refreshDailyQuizState();
  if(dailyQuizCount>=DAILY_QUESTION_LIMIT||!currentQuestion)return;
  const buttons=byId("options").querySelectorAll("button");buttons.forEach(b=>b.disabled=true);
- const oldScore=localStorage.getItem("vuvScore"),oldAnswered=localStorage.getItem("vuvAnswered"),oldCount=localStorage.getItem("vuvQuizDailyCount");
+ let oldScore=null,oldAnswered=null,oldCount=null,captured=false;
  try{
+  oldScore=localStorage.getItem("vuvScore");oldAnswered=localStorage.getItem("vuvAnswered");oldCount=localStorage.getItem("vuvQuizDailyCount");captured=true;
   let score=Number(oldScore||0),answered=Number(oldAnswered||0);
   if(!Number.isFinite(score)||score<0)score=0;if(!Number.isFinite(answered)||answered<0)answered=0;
   const correct=i===currentQuestion.a;
@@ -292,7 +293,7 @@ function answerQuiz(i){
   localStorage.setItem("vuvQuizDailyCount",String(dailyQuizCount+1));dailyQuizCount+=1;
   byId("quizMsg").textContent=correct?"सही जवाब! आपको 10 अंक मिले।":"सही उत्तर: "+currentQuestion.o[currentQuestion.a];
  }catch(e){
-  try{if(oldScore===null)localStorage.removeItem("vuvScore");else localStorage.setItem("vuvScore",oldScore);if(oldAnswered===null)localStorage.removeItem("vuvAnswered");else localStorage.setItem("vuvAnswered",oldAnswered);if(oldCount===null)localStorage.removeItem("vuvQuizDailyCount");else localStorage.setItem("vuvQuizDailyCount",oldCount);}catch(rollbackError){}
+  if(captured)try{if(oldScore===null)localStorage.removeItem("vuvScore");else localStorage.setItem("vuvScore",oldScore);if(oldAnswered===null)localStorage.removeItem("vuvAnswered");else localStorage.setItem("vuvAnswered",oldAnswered);if(oldCount===null)localStorage.removeItem("vuvQuizDailyCount");else localStorage.setItem("vuvQuizDailyCount",oldCount);}catch(rollbackError){}
   byId("quizMsg").textContent="फोन में अंक सुरक्षित नहीं हो पाए। जगह खाली करके फिर कोशिश करें।";
  }
  renderQuiz();
