@@ -16,7 +16,7 @@ button,a,input,select{font:inherit}a{color:var(--green)}
 main{max-width:760px;margin:auto;padding:12px}.section{display:none;background:var(--white);border:1px solid var(--line);border-radius:17px;padding:15px;margin:13px 0;box-shadow:0 3px 12px #173a2108;scroll-margin-top:72px}.section.active{display:block}.section h2{font-size:18px;margin:0 0 11px;color:var(--green);display:flex;align-items:center;gap:8px}.section h3{font-size:15px;margin:13px 0 7px}.muted{color:var(--muted);font-size:12px;line-height:1.5}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.tile{background:#f0f7f1;border:1px solid #e1eee3;border-radius:13px;padding:11px}.tile b{display:block;font-size:13px}.tile p{margin:5px 0 0;font-size:12px;line-height:1.45}.service-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.service{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:91px;padding:10px 5px;background:#f4faf4;border:1px solid #dceade;border-radius:14px;text-decoration:none;color:var(--ink);font-size:12px;font-weight:700;gap:5px}.service .ico{width:37px;height:37px;border-radius:12px;display:grid;place-items:center;background:#dff1e1;font-size:21px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:10px;padding:10px 12px;background:var(--green);color:#fff;text-decoration:none;font-size:13px;font-weight:700;cursor:pointer}.btn.light{background:#e9f5eb;color:var(--green);border:1px solid #cfe4d2}.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.status{background:#eff8ef;border-radius:11px;padding:11px;font-size:13px;line-height:1.5}.notice{background:#fff8e6;border-left:4px solid #e5b83e;border-radius:9px;padding:10px;font-size:12px;line-height:1.5;margin-top:10px}.links a{display:block;padding:10px 1px;text-decoration:none;border-bottom:1px solid var(--line);font-size:13px;font-weight:600}.links a:last-child{border-bottom:0}
 .stat{font-size:22px;font-weight:800;color:var(--green);margin-top:3px}.forecast .tile{padding:9px}.forecast .tile p{font-size:11px}
 label{display:block;font-size:13px;font-weight:700;margin:8px 0 4px}input,select{width:100%;padding:10px;border:1px solid #cadbcc;border-radius:10px;background:#fff;color:var(--ink);font-size:14px}button:disabled{opacity:.55;cursor:not-allowed}.quiz-option{display:block;width:100%;text-align:left;margin:7px 0;background:#f2f8f2;color:var(--ink);border:1px solid #d9e8dc;border-radius:10px;padding:11px;font-size:13px}.quiz-option.correct{border-color:#218044;background:#e6f6e9}.quiz-option.wrong{border-color:#c55;background:#fff0f0}
-.bottomnav{position:fixed;bottom:0;left:0;right:0;z-index:20;background:#fff;border-top:1px solid #dbe8dd;display:grid;grid-template-columns:repeat(4,1fr);padding:6px 4px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -4px 15px #173a2110}.bottomnav a{display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:#627368;font-size:10px;font-weight:700;padding:4px 0}.bottomnav a span:first-child{font-size:19px}.bottomnav a.active{color:var(--green)}.bottomnav a.active span:first-child{background:#e4f3e6;border:1px solid #cce4d0;border-radius:10px;padding:2px 12px}
+.bottomnav{position:fixed;bottom:0;left:0;right:0;z-index:20;background:#fff;border-top:1px solid #dbe8dd;display:grid;grid-template-columns:repeat(3,1fr);padding:6px 4px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -4px 15px #173a2110}.bottomnav a{display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:#627368;font-size:10px;font-weight:700;padding:4px 0}.bottomnav a span:first-child{font-size:19px}.bottomnav a.active{color:var(--green)}.bottomnav a.active span:first-child{background:#e4f3e6;border:1px solid #cce4d0;border-radius:10px;padding:2px 12px}
 footer{text-align:center;padding:18px 10px;color:var(--muted);font-size:11px}
 @media(min-width:560px){.service-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.hero img{max-height:280px}}@media(max-width:370px){.service-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.brand h1{font-size:18px}}
 body:not([data-screen="home"]) .hero{display:none}
@@ -135,10 +135,10 @@ body:not([data-screen="home"]) .hero{display:none}
 
 <section class="section" id="quiz">
  <h2>🧠 किसान ज्ञान क्विज़</h2>
- <p class="muted">हर तारीख के लिए प्रश्न बदलता है। सही उत्तर पर 10 अंक मिलेंगे।</p>
+ <p class="muted">हर उत्तर के बाद अगला नया प्रश्न मिलेगा। सही उत्तर पर 10 अंक मिलेंगे। एक दिन में 30 प्रश्न हल कर सकते हैं।</p>
  <p id="question" style="font-weight:700"></p><div id="options"></div><p id="quizMsg" aria-live="polite"></p>
  <div class="grid"><div class="tile"><span class="muted">कुल अंक — इस फोन पर</span><div class="stat" id="score">0</div></div><div class="tile"><span class="muted">हल किए प्रश्न</span><div class="stat" id="answered">0</div></div></div>
- <div class="notice">आपके अंक इसी फोन में सुरक्षित रहते हैं। साझा दैनिक / साप्ताहिक / मासिक Top 10 रैंकिंग के लिए सुरक्षित सर्वर और डेटाबेस जरूरी है; अभी कोई साझा रैंकिंग चालू नहीं है।</div>
+ <div class="notice">आपके अंक इसी फोन में सुरक्षित रहते हैं। अभी साझा दैनिक / साप्ताहिक / मासिक Top 10 रैंकिंग उपलब्ध नहीं है; इसके लिए सुरक्षित सर्वर और डेटाबेस की जरूरत होगी।</div>
 </section>
 
 <section class="section" id="profile">
@@ -165,8 +165,7 @@ body:not([data-screen="home"]) .hero{display:none}
 </main>
 <footer>VUV किसान सेवा · विकास उर्वरक विक्रेता · बसखारी, अंबेडकर नगर</footer>
 <nav class="bottomnav" aria-label="मुख्य नेविगेशन">
- <a href="#home" class="active"><span>⌂</span><span>होम</span></a>
- <a href="#home"><span>▦</span><span>सभी सेवाएँ</span></a>
+ <a href="#home" class="active"><span>▦</span><span>सभी सेवाएँ</span></a>
  <a href="#news"><span>♧</span><span>सूचनाएँ</span></a>
  <a href="#profile"><span>♙</span><span>मेरा खाता</span></a>
 </nav>
@@ -220,15 +219,23 @@ const questions=[
 {q:"फसल में रोग का लक्षण दिखे तो क्या करें?",o:["सही पहचान कर विशेषज्ञ से सलाह","हर दवा एक साथ डालें","सिंचाई बंद कर दें"],a:0},
 {q:"मटर और चना जैसी दलहनी फसलें किस प्रक्रिया से मिट्टी में नाइट्रोजन बढ़ाने में मदद करती हैं?",o:["जड़ों की गांठों में सहजीवी जीवाणु","पत्तियों पर धूल","फल का रंग"],a:0}
 ];
-const now=new Date(),dateKey=now.getFullYear()+"-"+(now.getMonth()+1)+"-"+now.getDate(),dayNo=Math.floor((new Date(now.getFullYear(),now.getMonth(),now.getDate())-new Date(now.getFullYear(),0,0))/86400000),question=questions[dayNo%questions.length];
-let quizDone=false;try{quizDone=localStorage.getItem("vuvQuizDate")===dateKey}catch(e){}
+const now=new Date(),dateKey=now.getFullYear()+"-"+(now.getMonth()+1)+"-"+now.getDate(),dayNo=Math.floor((new Date(now.getFullYear(),now.getMonth(),now.getDate())-new Date(now.getFullYear(),0,0))/86400000);
+let dailyQuizCount=0;try{if(localStorage.getItem("vuvQuizProgressDate")!==dateKey){localStorage.setItem("vuvQuizProgressDate",dateKey);localStorage.setItem("vuvQuizDailyCount","0");}dailyQuizCount=Number(localStorage.getItem("vuvQuizDailyCount")||0)}catch(e){}
+let currentQuestion=questions[(dayNo+dailyQuizCount)%questions.length];
 function renderQuiz(){
- byId("question").textContent=question.q;const box=byId("options");box.innerHTML="";
- question.o.forEach((opt,i)=>{const b=document.createElement("button");b.className="quiz-option";b.textContent=opt;b.disabled=quizDone;b.addEventListener("click",()=>answerQuiz(i));box.appendChild(b)});
- if(quizDone)byId("quizMsg").textContent="आज का प्रश्न हल हो चुका है। कल नया प्रश्न मिलेगा।";updateScore();
+ currentQuestion=questions[(dayNo+dailyQuizCount)%questions.length];
+ byId("question").textContent=dailyQuizCount>=questions.length?"आज के सभी 30 प्रश्न पूरे हो गए! कल फिर नए प्रश्न मिलेंगे।":currentQuestion.q;
+ const box=byId("options");box.innerHTML="";
+ if(dailyQuizCount<questions.length){currentQuestion.o.forEach((opt,i)=>{const b=document.createElement("button");b.className="quiz-option";b.textContent=opt;b.addEventListener("click",()=>answerQuiz(i));box.appendChild(b)});}
+ updateScore();
 }
 function answerQuiz(i){
- if(quizDone)return;quizDone=true;try{localStorage.setItem("vuvQuizDate",dateKey);let score=Number(localStorage.getItem("vuvScore")||0),answered=Number(localStorage.getItem("vuvAnswered")||0);if(i===question.a){score+=10;byId("quizMsg").textContent="सही जवाब! आपको 10 अंक मिले।"}else byId("quizMsg").textContent="सही उत्तर: "+question.o[question.a];localStorage.setItem("vuvScore",String(score));localStorage.setItem("vuvAnswered",String(answered+1));}catch(e){byId("quizMsg").textContent="फोन में सेव करने की अनुमति उपलब्ध नहीं है।"}renderQuiz();
+ if(dailyQuizCount>=questions.length)return;
+ const buttons=byId("options").querySelectorAll("button");buttons.forEach(b=>b.disabled=true);
+ let score=Number(localStorage.getItem("vuvScore")||0),answered=Number(localStorage.getItem("vuvAnswered")||0);
+ if(i===currentQuestion.a){score+=10;byId("quizMsg").textContent="सही जवाब! आपको 10 अंक मिले।"}else byId("quizMsg").textContent="सही उत्तर: "+currentQuestion.o[currentQuestion.a];
+ try{localStorage.setItem("vuvScore",String(score));localStorage.setItem("vuvAnswered",String(answered+1));dailyQuizCount+=1;localStorage.setItem("vuvQuizDailyCount",String(dailyQuizCount));}catch(e){byId("quizMsg").textContent="फोन में अंक सुरक्षित नहीं हो पाए।"}
+ renderQuiz();
 }
 function updateScore(){try{byId("score").textContent=localStorage.getItem("vuvScore")||"0";byId("answered").textContent=localStorage.getItem("vuvAnswered")||"0"}catch(e){}}
 let selectedFarmerPhoto="";
@@ -241,7 +248,7 @@ function clearFarmer(){try{localStorage.removeItem("vuvFarmer")}catch(e){}["farm
 function loadFarmer(){try{const p=JSON.parse(localStorage.getItem("vuvFarmer")||"null");if(p){byId("farmerName").value=p.name||"";byId("farmerVillage").value=p.village||"";byId("farmerArea").value=p.area||"";byId("farmerUnit").value=p.unit||"बीघा";selectedFarmerPhoto=p.photo||"";if(selectedFarmerPhoto)byId("farmerPhotoPreview").src=selectedFarmerPhoto}}catch(e){}}
 byId("farmerPhoto").addEventListener("change",e=>{const file=e.target.files?.[0];if(!file)return;if(!file.type.startsWith("image/")){byId("profileMsg").textContent="कृपया फोटो फ़ाइल चुनें।";return;}const reader=new FileReader();reader.onload=()=>{const img=new Image();img.onload=()=>{const canvas=document.createElement("canvas"),max=420,scale=Math.min(1,max/Math.max(img.width,img.height));canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);selectedFarmerPhoto=canvas.toDataURL("image/jpeg",0.72);byId("farmerPhotoPreview").src=selectedFarmerPhoto;byId("profileMsg").textContent="फोटो चुन ली गई है। अब जानकारी सुरक्षित करें।"};img.src=reader.result};reader.readAsDataURL(file);});
 function setActiveNav(id){
- const target=(id==="profile")?3:(id==="news")?2:0;
+ const target=(id==="profile")?2:(id==="news")?1:0;
  document.querySelectorAll(".bottomnav a").forEach((a,i)=>a.classList.toggle("active",i===target));
 }
 function showScreen(id,push=true){
@@ -254,7 +261,7 @@ function showScreen(id,push=true){
 window.addEventListener("popstate",e=>showScreen(e.state?.screen||"home",false));
 // Service cards and navigation links open one page at a time.
 document.querySelectorAll(".service").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();showScreen(a.getAttribute("href").slice(1));}));
-document.querySelectorAll(".bottomnav a").forEach((a,i)=>a.addEventListener("click",e=>{e.preventDefault();showScreen(["home","home","news","profile"][i]);}));
+document.querySelectorAll(".bottomnav a").forEach((a,i)=>a.addEventListener("click",e=>{e.preventDefault();showScreen(["home","news","profile"][i]);}));
 if(!history.state?.screen)history.replaceState({screen:"home"},"","#home");
 document.body.dataset.screen=history.state?.screen||"home";
 renderQuiz();loadFarmer();loadWeather();
