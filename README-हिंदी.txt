@@ -24,6 +24,14 @@
 - नया APK build/फोन पर परीक्षण बाकी है। पुराना APK update करने से पहले signing-key की समस्या और किसान डेटा का backup ध्यान में रखें। ऐप में बैकअप बनाएं/वापस लाएँ विकल्प मौजूद है; अनइंस्टॉल करने से पहले बैकअप फ़ाइल बनाकर सुरक्षित रखें।
 
 किसी भी database password या service-role key को repository, ऐप या ChatGPT में न रखें। ऐप में केवल publishable key है; यह public client key है और सभी writes server-side function से नियंत्रित हैं।
+### APK signing जाँच — एक ही फोन पर update अभी रोकें
+- Build #10 के installed APK certificate SHA-256: `B8:78:72:16:08:3B:BF:60:9C:50:A4:03:F3:0A:9B:2D:93:A8:1D:63:BC:CC:CE:16:9E:C4:E1:C2:86:A8:C7:23`।
+- Build #13 certificate SHA-256: `4A:BF:51:06:47:A1:AD:DE:96:94:24:6A:0D:58:B6:5C:C8:FF:08:D6:F1:D9:87:C0:05:19:CB:A7:F9:59:D3:A4`।
+- दोनों fingerprints अलग हैं। ये APK अलग-अलग temporary Android Debug signing keys से बने थे। इसलिए Build #10 के ऊपर Build #13 या नई signing key वाला APK update नहीं होगा।
+- पुरानी debug private key GitHub Actions के हर नए runner में दोबारा बनी; APK से private key वापस नहीं निकाली जा सकती। नया permanent release key पुरानी app के ऊपर update करने के लिए पर्याप्त नहीं है।
+- सुरक्षित रास्ता: पुरानी app में उपलब्ध **बैकअप बनाएं** विकल्प से JSON backup लें; फिर नई permanent key और अलग package ID वाली migration app बनाएँ, उसे पुरानी app के साथ install करके backup import और Supabase ranking test करें। पुरानी app को तभी हटाएँ जब नई app और backup की पुष्टि हो जाए।
+- नया signing keystore GitHub Actions secrets में सुरक्षित रखना होगा; keystore/password/alias को public repository में commit नहीं करना है। जब तक signing secrets उपलब्ध न हों, signed APK build नहीं चलाना है।
+
 ### पुराने APK पर सुरक्षित अपडेट
 Workflow अब स्थायी release signing के बिना APK जारी नहीं करेगा। GitHub repository के Settings → Secrets and variables → Actions में ये चार **Repository secrets** बनाने होंगे:
 - VUV_KEYSTORE_BASE64 — release keystore की Base64 सामग्री
